@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type EstateServiceClient interface {
-	GetEstateList(ctx context.Context, in *GetListParameters, opts ...grpc.CallOption) (*EstateMainInfo, error)
+	GetEstateList(ctx context.Context, in *GetListParameters, opts ...grpc.CallOption) (*EstateList, error)
 	GetEstateInfo(ctx context.Context, in *GetEstateInfoParameter, opts ...grpc.CallOption) (*Estate, error)
 	CreateEstate(ctx context.Context, in *Estate, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// rpc EditEstate() returns ();
@@ -38,8 +38,8 @@ func NewEstateServiceClient(cc grpc.ClientConnInterface) EstateServiceClient {
 	return &estateServiceClient{cc}
 }
 
-func (c *estateServiceClient) GetEstateList(ctx context.Context, in *GetListParameters, opts ...grpc.CallOption) (*EstateMainInfo, error) {
-	out := new(EstateMainInfo)
+func (c *estateServiceClient) GetEstateList(ctx context.Context, in *GetListParameters, opts ...grpc.CallOption) (*EstateList, error) {
+	out := new(EstateList)
 	err := c.cc.Invoke(ctx, "/estate.EstateService/GetEstateList", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func (c *estateServiceClient) DeleteEstate(ctx context.Context, in *DeleteEstate
 // All implementations must embed UnimplementedEstateServiceServer
 // for forward compatibility
 type EstateServiceServer interface {
-	GetEstateList(context.Context, *GetListParameters) (*EstateMainInfo, error)
+	GetEstateList(context.Context, *GetListParameters) (*EstateList, error)
 	GetEstateInfo(context.Context, *GetEstateInfoParameter) (*Estate, error)
 	CreateEstate(context.Context, *Estate) (*emptypb.Empty, error)
 	// rpc EditEstate() returns ();
@@ -90,7 +90,7 @@ type EstateServiceServer interface {
 type UnimplementedEstateServiceServer struct {
 }
 
-func (UnimplementedEstateServiceServer) GetEstateList(context.Context, *GetListParameters) (*EstateMainInfo, error) {
+func (UnimplementedEstateServiceServer) GetEstateList(context.Context, *GetListParameters) (*EstateList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEstateList not implemented")
 }
 func (UnimplementedEstateServiceServer) GetEstateInfo(context.Context, *GetEstateInfoParameter) (*Estate, error) {

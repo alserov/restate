@@ -7,7 +7,7 @@ option go_package = "github.com/alserov/restate/estate";
 package estate;
 
 service EstateService {
-  rpc GetEstateList(GetListParameters) returns (EstateMainInfo);
+  rpc GetEstateList(GetListParameters) returns (EstateList);
   rpc GetEstateInfo(GetEstateInfoParameter) returns (Estate);
 
   rpc CreateEstate(Estate) returns(google.protobuf.Empty);
@@ -33,7 +33,7 @@ message GetListParameters {
 }
 
 message EstateList {
-  repeated Estate List = 1;
+  repeated EstateMainInfo List = 1;
 }
 
 message EstateMainInfo {
@@ -41,7 +41,7 @@ message EstateMainInfo {
   string title = 2;
   string country = 3;
   string city = 4;
-  float price = 5;
+  float  price = 5;
   string mainImage = 6;
 }
 
@@ -49,12 +49,12 @@ message Estate {
   optional string id = 1;
   string title = 2;
   string description = 3;
-  float price = 4;
+  float  price = 4;
   string country = 5;
   string city = 6;
   string street = 7;
   repeated string images = 8;
   string mainImage = 9;
-  float square = 10;
-  int32 floor = 11;
+  float  square = 10;
+  int32  floor = 11;
 }
