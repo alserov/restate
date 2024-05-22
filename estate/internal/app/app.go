@@ -1,0 +1,49 @@
+package app
+
+import (
+	"context"
+	"github.com/alserov/restate/estate/internal/config"
+	"github.com/alserov/restate/estate/internal/log"
+	"github.com/alserov/restate/estate/internal/server/grpc"
+	"github.com/alserov/restate/estate/internal/service"
+	"net"
+	"os/signal"
+	"syscall"
+)
+
+func MustStart(cfg *config.Config) {
+	lg := log.NewLogger(cfg.Env, log.KindZap)
+
+	srvc := service.NewService()
+	srvr := grpc.RegisterHandler(srvc)
+
+	run(func() {
+		l, err := net.Listen("tcp", cfg.Addr)
+		if err != nil {
+			panic("failed to listen tcp: " + err.Error())
+		}
+		defer func() {
+			_ = l.Close()
+		}()
+
+		lg.Info("starting server", log.WithData("port", cfg.Addr))
+
+		if err = srvr.Serve(l); err != nil {
+			if err != nil {
+				panic("failed to serve: " + err.Error())
+			}
+		}
+	})
+
+	lg.Info("shutdown server", nil)
+	srvr.GracefulStop()
+}
+
+func run(fn func()) {
+	go fn()
+
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer cancel()
+
+	<-ctx.Done()
+}
