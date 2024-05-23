@@ -1,0 +1,16 @@
+version: 0.0.1
+services:
+  postgres:
+    container_name: db_estate
+    image: postgres
+    restart: on-failure
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=1787
+      - POSTGRES_DB=estate
+    ports:
+      - 4000:5432
+    volumes:
+      - data:/var/data/lib/postgres/estate
+volumes:
+  data:

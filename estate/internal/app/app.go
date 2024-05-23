@@ -20,7 +20,7 @@ func MustStart(cfg *config.Config) {
 
 	repo := posgtres.NewRepository(db)
 	srvc := service.NewService(repo)
-	srvr := grpc.RegisterHandler(srvc)
+	srvr := grpc.RegisterHandler(srvc, lg)
 
 	run(func() {
 		l, err := net.Listen("tcp", cfg.Addr)

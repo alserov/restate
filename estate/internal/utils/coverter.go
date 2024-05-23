@@ -9,7 +9,17 @@ type Converter struct {
 }
 
 func (Converter) ToGetEstateListParameters(in *estate.GetListParameters) models.GetEstateListParameters {
-	return models.GetEstateListParameters{}
+	return models.GetEstateListParameters{
+		MinPrice: in.MinPrice,
+		MaxPrice: in.MaxPrice,
+		Square:   in.Square,
+		Country:  in.Country,
+		City:     in.City,
+		Floor:    in.Floor,
+
+		Limit:  in.Limit,
+		Offset: in.Offset,
+	}
 }
 
 func (Converter) FromEstate(in models.Estate) *estate.Estate {

@@ -19,6 +19,8 @@ func MustConnect(dsn string) (*pgx.Conn, func()) {
 		panic("failed to ping: " + err.Error())
 	}
 
+	//mustMigrate(conn)
+
 	return conn, func() {
 		ctx, cancel = context.WithTimeout(context.Background(), time.Second*3)
 		defer cancel()
