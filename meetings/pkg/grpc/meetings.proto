@@ -1,0 +1,34 @@
+syntax="proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/alserov/restate/meetings/internal/pkg;meetings";
+
+package meetings;
+
+service MeetingsService {
+  rpc ArrangeMeeting(Meeting) returns(google.protobuf.Empty);
+  rpc CancelMeeting(CancelMeetingParameter) returns(google.protobuf.Empty);
+  rpc GetAvailableTimeForMeeting(GetAvailableTimeForMeetingParameter) returns(AvailableTimeList);
+}
+
+message Meeting {
+  string id = 1;
+  google.protobuf.Timestamp timestamp = 2;
+  string estateID = 3;
+  string visitorPhone = 4;
+}
+
+message CancelMeetingParameter {
+  string id = 1;
+  string visitorPhone = 2;
+}
+
+message GetAvailableTimeForMeetingParameter {
+  string estateID = 1;
+}
+
+message AvailableTimeList {
+  repeated google.protobuf.Timestamp timestamps = 1;
+}
