@@ -43,7 +43,7 @@ func WithData(key string, val any) *Data {
 
 const (
 	ContextLogger         ContextKey = "log"
-	ContextIdempotencyKey            = "ikey"
+	ContextIdempotencyKey ContextKey = "ikey"
 
 	EnvLocal = "local"
 	EnvProd  = "prod"
