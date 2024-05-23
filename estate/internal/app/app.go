@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"github.com/alserov/restate/estate/internal/config"
+	"github.com/alserov/restate/estate/internal/db/posgtres"
 	"github.com/alserov/restate/estate/internal/log"
 	"github.com/alserov/restate/estate/internal/server/grpc"
 	"github.com/alserov/restate/estate/internal/service"
@@ -14,7 +15,11 @@ import (
 func MustStart(cfg *config.Config) {
 	lg := log.NewLogger(cfg.Env, log.KindZap)
 
-	srvc := service.NewService()
+	db, closeConn := posgtres.MustConnect(cfg.DB.Dsn())
+	defer closeConn()
+
+	repo := posgtres.NewRepository(db)
+	srvc := service.NewService(repo)
 	srvr := grpc.RegisterHandler(srvc)
 
 	run(func() {
