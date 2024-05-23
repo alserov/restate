@@ -20,7 +20,7 @@ type Postgres struct {
 }
 
 func (p *Postgres) Dsn() string {
-	return fmt.Sprintf("")
+	return fmt.Sprintf("dsn")
 }
 
 func MustLoad() *Config {
