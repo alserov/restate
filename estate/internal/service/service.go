@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"github.com/alserov/restate/estate/internal/db"
 	"github.com/alserov/restate/estate/internal/service/models"
 )
 
@@ -15,11 +16,12 @@ type Service interface {
 
 var _ Service = &service{}
 
-func NewService() *service {
-	return &service{}
+func NewService(repo db.Repository) *service {
+	return &service{repo: repo}
 }
 
 type service struct {
+	repo db.Repository
 }
 
 func (s service) GetEstateInfo(ctx context.Context, estateID string) (models.Estate, error) {
