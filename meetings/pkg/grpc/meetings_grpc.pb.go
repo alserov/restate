@@ -56,7 +56,7 @@ func (c *meetingsServiceClient) CancelMeeting(ctx context.Context, in *CancelMee
 
 func (c *meetingsServiceClient) GetAvailableTimeForMeeting(ctx context.Context, in *GetAvailableTimeForMeetingParameter, opts ...grpc.CallOption) (*AvailableTimeList, error) {
 	out := new(AvailableTimeList)
-	err := c.cc.Invoke(ctx, "/meetings.MeetingsService/GetAvailableTimeForMeeting", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/meetings.MeetingsService/GetMeetingTimestamps", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (UnimplementedMeetingsServiceServer) CancelMeeting(context.Context, *Cancel
 	return nil, status.Errorf(codes.Unimplemented, "method CancelMeeting not implemented")
 }
 func (UnimplementedMeetingsServiceServer) GetAvailableTimeForMeeting(context.Context, *GetAvailableTimeForMeetingParameter) (*AvailableTimeList, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAvailableTimeForMeeting not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method GetMeetingTimestamps not implemented")
 }
 func (UnimplementedMeetingsServiceServer) mustEmbedUnimplementedMeetingsServiceServer() {}
 
@@ -145,7 +145,7 @@ func _MeetingsService_GetAvailableTimeForMeeting_Handler(srv interface{}, ctx co
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/meetings.MeetingsService/GetAvailableTimeForMeeting",
+		FullMethod: "/meetings.MeetingsService/GetMeetingTimestamps",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MeetingsServiceServer).GetAvailableTimeForMeeting(ctx, req.(*GetAvailableTimeForMeetingParameter))
@@ -169,7 +169,7 @@ var MeetingsService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MeetingsService_CancelMeeting_Handler,
 		},
 		{
-			MethodName: "GetAvailableTimeForMeeting",
+			MethodName: "GetMeetingTimestamps",
 			Handler:    _MeetingsService_GetAvailableTimeForMeeting_Handler,
 		},
 	},

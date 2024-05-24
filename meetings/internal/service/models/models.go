@@ -8,3 +8,8 @@ type Meeting struct {
 	EstateID     string    `json:"estateID"`
 	VisitorPhone string    `json:"visitorPhone"`
 }
+
+const (
+	MinMeetingTimestamp = 9
+	MaxMeetingTimestamp = 20
+)

@@ -2,6 +2,6 @@ CREATE TABLE IF NOT EXISTS meetings
 (
     id           text PRIMARY KEY,
     timestamp    timestamp,
-    estateID     text,
-    visitorPhone text
+    estate_id     text,
+    visitor_phone text
 );

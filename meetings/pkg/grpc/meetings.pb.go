@@ -324,10 +324,10 @@ var file_pkg_grpc_meetings_proto_depIdxs = []int32{
 	4, // 1: meetings.AvailableTimeList.timestamps:type_name -> google.protobuf.Timestamp
 	0, // 2: meetings.MeetingsService.ArrangeMeeting:input_type -> meetings.Meeting
 	1, // 3: meetings.MeetingsService.CancelMeeting:input_type -> meetings.CancelMeetingParameter
-	2, // 4: meetings.MeetingsService.GetAvailableTimeForMeeting:input_type -> meetings.GetAvailableTimeForMeetingParameter
+	2, // 4: meetings.MeetingsService.GetMeetingTimestamps:input_type -> meetings.GetAvailableTimeForMeetingParameter
 	5, // 5: meetings.MeetingsService.ArrangeMeeting:output_type -> google.protobuf.Empty
 	5, // 6: meetings.MeetingsService.CancelMeeting:output_type -> google.protobuf.Empty
-	3, // 7: meetings.MeetingsService.GetAvailableTimeForMeeting:output_type -> meetings.AvailableTimeList
+	3, // 7: meetings.MeetingsService.GetMeetingTimestamps:output_type -> meetings.AvailableTimeList
 	5, // [5:8] is the sub-list for method output_type
 	2, // [2:5] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
