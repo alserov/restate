@@ -1,8 +1,8 @@
-name: Meetings on push
+name: Metrics on push
 on:
   push:
     branches:
-      - meetings
+      - metrics
 jobs:
   tests:
     name: Tests
@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: testing
-        working-directory: meetings
+        working-directory: metrics
         run: go test -v ./...
 
   linter:
@@ -35,4 +35,4 @@ jobs:
       - name: linter
         uses: golangci/golangci-lint-action@v4
         with:
-          working-directory: meetings
+          working-directory: metrics
