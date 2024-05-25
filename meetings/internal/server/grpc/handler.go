@@ -26,6 +26,26 @@ type handler struct {
 	conv utils.Converter
 }
 
+func (h *handler) GetMeetingsByEstateID(ctx context.Context, parameter *meetings.GetAvailableTimeForMeetingParameter) (*meetings.Meetings, error) {
+	mtngs, err := h.srvc.GetMeetingsByEstateID(ctx, parameter.EstateID)
+	if err != nil {
+		msg, st := utils.FromError(h.logger, err)
+		return nil, status.Error(st, msg)
+	}
+
+	return h.conv.FromMeetings(mtngs), nil
+}
+
+func (h *handler) GetMeetingsByPhoneNumber(ctx context.Context, parameter *meetings.GetMeetingsByPhoneNumberParameter) (*meetings.Meetings, error) {
+	mtngs, err := h.srvc.GetMeetingsByPhoneNumber(ctx, parameter.PhoneNumber)
+	if err != nil {
+		msg, st := utils.FromError(h.logger, err)
+		return nil, status.Error(st, msg)
+	}
+
+	return h.conv.FromMeetings(mtngs), nil
+}
+
 func (h *handler) ArrangeMeeting(ctx context.Context, meeting *meetings.Meeting) (*emptypb.Empty, error) {
 	err := h.srvc.ArrangeMeeting(ctx, h.conv.ToMeeting(meeting))
 	if err != nil {

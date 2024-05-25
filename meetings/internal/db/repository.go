@@ -10,4 +10,7 @@ type Repository interface {
 	ArrangeMeeting(ctx context.Context, m models.Meeting) error
 	CancelMeeting(ctx context.Context, parameter models.CancelMeetingParameter) error
 	GetMeetingTimestamps(ctx context.Context, estateID string) ([]time.Time, error)
+
+	GetMeetingsByEstateID(ctx context.Context, estateID string) ([]models.Meeting, error)
+	GetMeetingsByPhoneNumber(ctx context.Context, phoneNumber string) ([]models.Meeting, error)
 }

@@ -13,6 +13,9 @@ type Service interface {
 	ArrangeMeeting(ctx context.Context, m models.Meeting) error
 	CancelMeeting(ctx context.Context, parameter models.CancelMeetingParameter) error
 	GetAvailableTimeForMeeting(ctx context.Context, estateID string) ([]time.Time, error)
+
+	GetMeetingsByEstateID(ctx context.Context, estateID string) ([]models.Meeting, error)
+	GetMeetingsByPhoneNumber(ctx context.Context, phoneNumber string) ([]models.Meeting, error)
 }
 
 var _ Service = &service{}
@@ -23,6 +26,24 @@ func NewService(repo db.Repository) *service {
 
 type service struct {
 	repo db.Repository
+}
+
+func (s *service) GetMeetingsByEstateID(ctx context.Context, estateID string) ([]models.Meeting, error) {
+	mtngs, err := s.repo.GetMeetingsByEstateID(ctx, estateID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to cancel meeting: %w", err)
+	}
+
+	return mtngs, nil
+}
+
+func (s *service) GetMeetingsByPhoneNumber(ctx context.Context, phoneNumber string) ([]models.Meeting, error) {
+	mtngs, err := s.repo.GetMeetingsByPhoneNumber(ctx, phoneNumber)
+	if err != nil {
+		return nil, fmt.Errorf("failed to cancel meeting: %w", err)
+	}
+
+	return mtngs, nil
 }
 
 func (s *service) ArrangeMeeting(ctx context.Context, m models.Meeting) error {
@@ -83,7 +104,7 @@ func selectAvailableTStampsForMeeting(tStamps []time.Time) []time.Time {
 
 		if t.Hour() >= models.MaxMeetingTimestamp {
 			now := time.Now()
-			t = time.Date(now.Year(), now.Month(), now.Day()+1, models.MinMeetingTimestamp, 0, 0, 0, time.Local)
+			t = time.Date(now.Year(), now.Month(), now.Day()+1, models.MinMeetingTimestamp, 0, 0, 0, time.UTC)
 		}
 
 		availableTStamps = append(availableTStamps, t)

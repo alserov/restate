@@ -26,6 +26,8 @@ type MeetingsServiceClient interface {
 	ArrangeMeeting(ctx context.Context, in *Meeting, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	CancelMeeting(ctx context.Context, in *CancelMeetingParameter, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetAvailableTimeForMeeting(ctx context.Context, in *GetAvailableTimeForMeetingParameter, opts ...grpc.CallOption) (*AvailableTimeList, error)
+	GetMeetingsByEstateID(ctx context.Context, in *GetAvailableTimeForMeetingParameter, opts ...grpc.CallOption) (*Meetings, error)
+	GetMeetingsByPhoneNumber(ctx context.Context, in *GetMeetingsByPhoneNumberParameter, opts ...grpc.CallOption) (*Meetings, error)
 }
 
 type meetingsServiceClient struct {
@@ -56,7 +58,25 @@ func (c *meetingsServiceClient) CancelMeeting(ctx context.Context, in *CancelMee
 
 func (c *meetingsServiceClient) GetAvailableTimeForMeeting(ctx context.Context, in *GetAvailableTimeForMeetingParameter, opts ...grpc.CallOption) (*AvailableTimeList, error) {
 	out := new(AvailableTimeList)
-	err := c.cc.Invoke(ctx, "/meetings.MeetingsService/GetMeetingTimestamps", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/meetings.MeetingsService/GetAvailableTimeForMeeting", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingsServiceClient) GetMeetingsByEstateID(ctx context.Context, in *GetAvailableTimeForMeetingParameter, opts ...grpc.CallOption) (*Meetings, error) {
+	out := new(Meetings)
+	err := c.cc.Invoke(ctx, "/meetings.MeetingsService/GetMeetingsByEstateID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meetingsServiceClient) GetMeetingsByPhoneNumber(ctx context.Context, in *GetMeetingsByPhoneNumberParameter, opts ...grpc.CallOption) (*Meetings, error) {
+	out := new(Meetings)
+	err := c.cc.Invoke(ctx, "/meetings.MeetingsService/GetMeetingsByPhoneNumber", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -70,6 +90,8 @@ type MeetingsServiceServer interface {
 	ArrangeMeeting(context.Context, *Meeting) (*emptypb.Empty, error)
 	CancelMeeting(context.Context, *CancelMeetingParameter) (*emptypb.Empty, error)
 	GetAvailableTimeForMeeting(context.Context, *GetAvailableTimeForMeetingParameter) (*AvailableTimeList, error)
+	GetMeetingsByEstateID(context.Context, *GetAvailableTimeForMeetingParameter) (*Meetings, error)
+	GetMeetingsByPhoneNumber(context.Context, *GetMeetingsByPhoneNumberParameter) (*Meetings, error)
 	mustEmbedUnimplementedMeetingsServiceServer()
 }
 
@@ -84,7 +106,13 @@ func (UnimplementedMeetingsServiceServer) CancelMeeting(context.Context, *Cancel
 	return nil, status.Errorf(codes.Unimplemented, "method CancelMeeting not implemented")
 }
 func (UnimplementedMeetingsServiceServer) GetAvailableTimeForMeeting(context.Context, *GetAvailableTimeForMeetingParameter) (*AvailableTimeList, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetMeetingTimestamps not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method GetAvailableTimeForMeeting not implemented")
+}
+func (UnimplementedMeetingsServiceServer) GetMeetingsByEstateID(context.Context, *GetAvailableTimeForMeetingParameter) (*Meetings, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMeetingsByEstateID not implemented")
+}
+func (UnimplementedMeetingsServiceServer) GetMeetingsByPhoneNumber(context.Context, *GetMeetingsByPhoneNumberParameter) (*Meetings, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMeetingsByPhoneNumber not implemented")
 }
 func (UnimplementedMeetingsServiceServer) mustEmbedUnimplementedMeetingsServiceServer() {}
 
@@ -145,10 +173,46 @@ func _MeetingsService_GetAvailableTimeForMeeting_Handler(srv interface{}, ctx co
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/meetings.MeetingsService/GetMeetingTimestamps",
+		FullMethod: "/meetings.MeetingsService/GetAvailableTimeForMeeting",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MeetingsServiceServer).GetAvailableTimeForMeeting(ctx, req.(*GetAvailableTimeForMeetingParameter))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingsService_GetMeetingsByEstateID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAvailableTimeForMeetingParameter)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingsServiceServer).GetMeetingsByEstateID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/meetings.MeetingsService/GetMeetingsByEstateID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingsServiceServer).GetMeetingsByEstateID(ctx, req.(*GetAvailableTimeForMeetingParameter))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MeetingsService_GetMeetingsByPhoneNumber_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMeetingsByPhoneNumberParameter)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeetingsServiceServer).GetMeetingsByPhoneNumber(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/meetings.MeetingsService/GetMeetingsByPhoneNumber",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeetingsServiceServer).GetMeetingsByPhoneNumber(ctx, req.(*GetMeetingsByPhoneNumberParameter))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -169,8 +233,16 @@ var MeetingsService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MeetingsService_CancelMeeting_Handler,
 		},
 		{
-			MethodName: "GetMeetingTimestamps",
+			MethodName: "GetAvailableTimeForMeeting",
 			Handler:    _MeetingsService_GetAvailableTimeForMeeting_Handler,
+		},
+		{
+			MethodName: "GetMeetingsByEstateID",
+			Handler:    _MeetingsService_GetMeetingsByEstateID_Handler,
+		},
+		{
+			MethodName: "GetMeetingsByPhoneNumber",
+			Handler:    _MeetingsService_GetMeetingsByPhoneNumber_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

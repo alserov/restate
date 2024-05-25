@@ -35,3 +35,18 @@ func (Converter) FromTimestamps(in []time.Time) *meetings.AvailableTimeList {
 
 	return &meetings.AvailableTimeList{Timestamps: tStamps}
 }
+
+func (Converter) FromMeetings(in []models.Meeting) *meetings.Meetings {
+	mtngs := make([]*meetings.Meeting, 0, len(in))
+
+	for _, mtng := range in {
+		mtngs = append(mtngs, &meetings.Meeting{
+			Id:           mtng.ID,
+			Timestamp:    timestamppb.New(mtng.Timestamp),
+			EstateID:     mtng.EstateID,
+			VisitorPhone: mtng.VisitorPhone,
+		})
+	}
+
+	return &meetings.Meetings{Meetings: mtngs}
+}

@@ -11,6 +11,9 @@ service MeetingsService {
   rpc ArrangeMeeting(Meeting) returns(google.protobuf.Empty);
   rpc CancelMeeting(CancelMeetingParameter) returns(google.protobuf.Empty);
   rpc GetAvailableTimeForMeeting(GetAvailableTimeForMeetingParameter) returns(AvailableTimeList);
+
+  rpc GetMeetingsByEstateID(GetAvailableTimeForMeetingParameter) returns (Meetings);
+  rpc GetMeetingsByPhoneNumber(GetMeetingsByPhoneNumberParameter) returns (Meetings);
 }
 
 message Meeting {
@@ -18,6 +21,18 @@ message Meeting {
   google.protobuf.Timestamp timestamp = 2;
   string estateID = 3;
   string visitorPhone = 4;
+}
+
+message Meetings {
+  repeated Meeting meetings = 1;
+}
+
+message GetMeetingsByEstateIDParameter {
+  string id = 1;
+}
+
+message GetMeetingsByPhoneNumberParameter {
+  string phoneNumber = 1;
 }
 
 message CancelMeetingParameter {
