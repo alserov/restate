@@ -19,21 +19,9 @@ func NewWorker(t WorkerType) Worker {
 
 type (
 	WorkerType uint
-	MetricType uint
 )
 
 const (
 	System WorkerType = iota
 	Business
 )
-
-const (
-	MetricsTopic = "metrics"
-
-	TimePerRequest MetricType = iota
-)
-
-type Message struct {
-	Type MetricType
-	Data []byte
-}
