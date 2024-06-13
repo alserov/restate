@@ -2,7 +2,6 @@ package log
 
 import (
 	"context"
-	"github.com/google/uuid"
 )
 
 type Logger interface {
@@ -20,13 +19,6 @@ type Data struct {
 }
 
 type ContextKey string
-
-func WithLogger(ctx context.Context, l Logger) context.Context {
-	ctx = context.WithValue(ctx, ContextLogger, l)
-	ctx = context.WithValue(ctx, ContextIdempotencyKey, uuid.NewString())
-
-	return context.WithValue(ctx, ContextLogger, l)
-}
 
 func FromCtx(ctx context.Context) Logger {
 	l, ok := ctx.Value(ContextLogger).(Logger)
