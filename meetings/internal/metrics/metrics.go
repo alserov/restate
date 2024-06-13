@@ -2,23 +2,25 @@ package metrics
 
 import (
 	"context"
-	"time"
+	"github.com/alserov/restate/metrics/pkg/models"
 )
 
-type Metrics interface {
-	TimePerRequest(ctx context.Context, duration time.Duration, handlerName string)
+type Producer interface {
+	Produce(ctx context.Context, message models.Message, topic string)
 }
 
-var _ Metrics = &metrics{}
+type Metrics interface {
+	Produce(ctx context.Context, message models.Message)
+}
 
-func NewMetrics() *metrics {
-	return &metrics{}
+func NewMetrics(p Producer) *metrics {
+	return &metrics{p}
 }
 
 type metrics struct {
+	Producer
 }
 
-func (m *metrics) TimePerRequest(ctx context.Context, duration time.Duration, handlerName string) {
-	//TODO implement me
-	panic("implement me")
+func (m *metrics) Produce(ctx context.Context, message models.Message) {
+	m.Producer.Produce(ctx, message, models.MetricsTopic)
 }

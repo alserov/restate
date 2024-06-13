@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"github.com/alserov/restate/meetings/internal/log"
+	"github.com/alserov/restate/meetings/internal/metrics"
 	"github.com/alserov/restate/meetings/internal/service"
 	"github.com/alserov/restate/meetings/internal/utils"
 	meetings "github.com/alserov/restate/meetings/pkg/grpc"
@@ -11,14 +12,16 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func RegisterHandler(srvc service.Service, l log.Logger) *grpc.Server {
+func RegisterHandler(srvc service.Service, m metrics.Metrics, l log.Logger) *grpc.Server {
 	srvr := grpc.NewServer()
-	meetings.RegisterMeetingsServiceServer(srvr, &handler{srvc: srvc, logger: l})
+	meetings.RegisterMeetingsServiceServer(srvr, &handler{srvc: srvc, logger: l, metrics: m})
 	return srvr
 }
 
 type handler struct {
 	meetings.UnimplementedMeetingsServiceServer
+
+	metrics metrics.Metrics
 
 	srvc   service.Service
 	logger log.Logger
