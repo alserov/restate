@@ -39,7 +39,7 @@ const (
 	GRPCClient = iota
 )
 
-func NewClient[T any](addr string, cl T, clientType uint) Client {
+func NewClient[T any](addr string, clientType uint) Client {
 	return &client[T]{
 		addr:   addr,
 		clType: clientType,
