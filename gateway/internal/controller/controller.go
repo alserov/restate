@@ -1,8 +1,11 @@
 package controller
 
 import (
+	estate "github.com/alserov/restate/estate/pkg/grpc"
+	"github.com/alserov/restate/gateway/internal/clients"
 	"github.com/alserov/restate/gateway/internal/log"
 	"github.com/alserov/restate/gateway/internal/middleware"
+	meetings "github.com/alserov/restate/meetings/pkg/grpc"
 	"github.com/labstack/echo/v4"
 )
 
@@ -10,10 +13,18 @@ type Controller interface {
 	SetupRoutes()
 }
 
-func NewController(app *echo.Echo, lg log.Logger) *controller {
+type Clients struct {
+	Estate   estate.EstateServiceClient
+	Meetings meetings.MeetingsServiceClient
+}
+
+func NewController(app *echo.Echo, lg log.Logger, cls *Clients) *controller {
 	return &controller{
 		app: app,
 		lg:  lg,
+
+		EstateHandler:   &EstateHandler{estateClient: clients.NewEstateClient(cls.Estate)},
+		MeetingsHandler: &MeetingsHandler{meetingsClient: clients.NewMeetingsClient(cls.Meetings)},
 	}
 }
 

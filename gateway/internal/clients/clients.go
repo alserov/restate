@@ -1,63 +1,28 @@
 package clients
 
 import (
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	estate "github.com/alserov/restate/estate/pkg/grpc"
+	meetings "github.com/alserov/restate/meetings/pkg/grpc"
 )
 
-type Client interface {
-	Addr() string
-	SetClient(cl any)
-	Type() uint
+type EstateClient interface {
+	GetList()
+	GetInfo()
+	CreateEstate()
+	DeleteEstate()
 }
 
-type client[T any] struct {
-	cl     T
-	clType uint
-
-	addr string
+func NewEstateClient(cl estate.EstateServiceClient) EstateClient {
+	return nil
 }
 
-func (c *client[T]) Type() uint {
-	return c.clType
+type MeetingsClient interface {
+	GetMeetings()
+	GetAvailableTime()
+	ArrangeMeeting()
+	CancelMeeting()
 }
 
-func (c *client[T]) Addr() string {
-	return c.addr
-}
-
-func (c *client[T]) SetClient(cl any) {
-	cln, ok := cl.(T)
-	if !ok {
-		panic("invalid client")
-	}
-
-	c.cl = cln
-}
-
-const (
-	GRPCClient = iota
-)
-
-func NewClient[T any](addr string, clientType uint) Client {
-	return &client[T]{
-		addr:   addr,
-		clType: clientType,
-	}
-}
-
-func Dial(cls ...Client) {
-	for _, cl := range cls {
-		switch cl.Type() {
-		case GRPCClient:
-			cln, err := grpc.NewClient(cl.Addr(), grpc.WithTransportCredentials(insecure.NewCredentials()))
-			if err != nil {
-				panic("failed to dial to client: " + err.Error())
-			}
-
-			cl.SetClient(cln)
-		default:
-			panic("invalid client type")
-		}
-	}
+func NewMeetingsClient(cl meetings.MeetingsServiceClient) MeetingsClient {
+	return nil
 }

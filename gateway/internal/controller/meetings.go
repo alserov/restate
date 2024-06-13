@@ -1,8 +1,12 @@
 package controller
 
-import "github.com/labstack/echo/v4"
+import (
+	"github.com/alserov/restate/gateway/internal/clients"
+	"github.com/labstack/echo/v4"
+)
 
 type MeetingsHandler struct {
+	meetingsClient clients.MeetingsClient
 }
 
 func (mh *MeetingsHandler) GetMeetings(c echo.Context) error {

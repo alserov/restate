@@ -3,9 +3,13 @@ package app
 import (
 	"context"
 	"fmt"
+	estate "github.com/alserov/restate/estate/pkg/grpc"
 	"github.com/alserov/restate/gateway/internal/config"
 	"github.com/alserov/restate/gateway/internal/controller"
 	"github.com/alserov/restate/gateway/internal/log"
+	"github.com/alserov/restate/gateway/internal/services"
+	grpcDial "github.com/alserov/restate/gateway/internal/services/grpc"
+	meetings "github.com/alserov/restate/meetings/pkg/grpc"
 	"github.com/labstack/echo/v4"
 	"os/signal"
 	"syscall"
@@ -14,13 +18,21 @@ import (
 func MustStart(cfg *config.Config) {
 	lg := log.NewLogger(cfg.Env, log.KindZap)
 
-	// TODO: implement dial to services
-
+	// app
 	app := echo.New()
 
-	ctrl := controller.NewController(app, lg)
+	// services
+	estateGRPCClient := services.Dial[estate.EstateServiceClient]("", services.GRPCClient, grpcDial.NewEstateClient)
+	meetingsGRPCClient := services.Dial[meetings.MeetingsServiceClient]("", services.GRPCClient, grpcDial.NewMeetingsClient)
+
+	// routes
+	ctrl := controller.NewController(app, lg, &controller.Clients{
+		Estate:   estateGRPCClient,
+		Meetings: meetingsGRPCClient,
+	})
 	ctrl.SetupRoutes()
 
+	// server start
 	run(func() {
 		if err := app.Start(fmt.Sprintf(":%s", cfg.Addr)); err != nil {
 			panic("failed to start server: " + err.Error())
