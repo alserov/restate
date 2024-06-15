@@ -3,6 +3,8 @@ module github.com/alserov/restate/gateway
 go 1.22.0
 
 require (
+	github.com/alserov/restate/estate v0.0.0-20240523181746-24b23444d94d
+	github.com/alserov/restate/meetings v0.0.0-20240525162557-ba928df7c567
 	github.com/labstack/echo/v4 v4.12.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.64.0
@@ -20,5 +22,5 @@ require (
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 // indirect
-	google.golang.org/protobuf v1.33.0 // indirect
+	google.golang.org/protobuf v1.34.1 // indirect
 )
