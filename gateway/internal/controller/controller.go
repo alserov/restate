@@ -4,6 +4,7 @@ import (
 	estate "github.com/alserov/restate/estate/pkg/grpc"
 	"github.com/alserov/restate/gateway/internal/clients"
 	"github.com/alserov/restate/gateway/internal/log"
+	"github.com/alserov/restate/gateway/internal/metrics"
 	"github.com/alserov/restate/gateway/internal/middleware"
 	meetings "github.com/alserov/restate/meetings/pkg/grpc"
 	"github.com/labstack/echo/v4"
@@ -18,10 +19,11 @@ type Clients struct {
 	Meetings meetings.MeetingsServiceClient
 }
 
-func NewController(app *echo.Echo, lg log.Logger, cls *Clients) *controller {
+func NewController(app *echo.Echo, lg log.Logger, metr metrics.Metrics, cls *Clients) *controller {
 	return &controller{
-		app: app,
-		lg:  lg,
+		app:  app,
+		lg:   lg,
+		metr: metr,
 
 		EstateHandler:   &EstateHandler{estateClient: clients.NewEstateClient(cls.Estate)},
 		MeetingsHandler: &MeetingsHandler{meetingsClient: clients.NewMeetingsClient(cls.Meetings)},
@@ -29,15 +31,16 @@ func NewController(app *echo.Echo, lg log.Logger, cls *Clients) *controller {
 }
 
 type controller struct {
-	app *echo.Echo
-	lg  log.Logger
+	app  *echo.Echo
+	lg   log.Logger
+	metr metrics.Metrics
 
 	EstateHandler   *EstateHandler
 	MeetingsHandler *MeetingsHandler
 }
 
 func (c *controller) SetupRoutes() {
-	v1 := c.app.Group("/v1", middleware.WithLogger(c.lg), middleware.WithErrorHandler)
+	v1 := c.app.Group("/v1", middleware.WithLogger(c.lg), middleware.WithRequestObserver(c.metr), middleware.WithErrorHandler)
 
 	estate := v1.Group("/estate")
 	meetings := v1.Group("/meetings")

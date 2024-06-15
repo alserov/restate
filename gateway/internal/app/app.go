@@ -7,6 +7,7 @@ import (
 	"github.com/alserov/restate/gateway/internal/config"
 	"github.com/alserov/restate/gateway/internal/controller"
 	"github.com/alserov/restate/gateway/internal/log"
+	"github.com/alserov/restate/gateway/internal/metrics"
 	"github.com/alserov/restate/gateway/internal/services"
 	grpcDial "github.com/alserov/restate/gateway/internal/services/grpc"
 	meetings "github.com/alserov/restate/meetings/pkg/grpc"
@@ -25,8 +26,11 @@ func MustStart(cfg *config.Config) {
 	estateGRPCClient := services.Dial[estate.EstateServiceClient]("", services.GRPCClient, grpcDial.NewEstateClient)
 	meetingsGRPCClient := services.Dial[meetings.MeetingsServiceClient]("", services.GRPCClient, grpcDial.NewMeetingsClient)
 
+	// metrics
+	metr := metrics.NewMetrics()
+
 	// routes
-	ctrl := controller.NewController(app, lg, &controller.Clients{
+	ctrl := controller.NewController(app, lg, metr, &controller.Clients{
 		Estate:   estateGRPCClient,
 		Meetings: meetingsGRPCClient,
 	})
