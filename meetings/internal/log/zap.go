@@ -1,7 +1,6 @@
 package log
 
 import (
-	"context"
 	"go.uber.org/zap"
 )
 
@@ -20,12 +19,7 @@ type zapLogger struct {
 	*zap.SugaredLogger
 }
 
-func (l zapLogger) Trace(ctx context.Context, msg string) {
-	key, ok := ctx.Value(ContextIdempotencyKey).(string)
-	if !ok {
-		panic("can not get idempotency key from context")
-	}
-
+func (l zapLogger) Trace(key, msg string) {
 	l.Infow(msg, "key", key)
 }
 

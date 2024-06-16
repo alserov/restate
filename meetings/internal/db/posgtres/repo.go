@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/alserov/restate/meetings/internal/db"
 	"github.com/alserov/restate/meetings/internal/service/models"
+	"github.com/alserov/restate/meetings/internal/wrappers"
 	"github.com/jackc/pgx/v5"
 	"time"
 )
@@ -22,6 +23,9 @@ type repo struct {
 }
 
 func (r *repo) GetMeetingsByEstateID(ctx context.Context, estateID string) ([]models.Meeting, error) {
+	l := wrappers.ExtractLogger(ctx)
+	key := wrappers.ExtractIdempotencyKey(ctx)
+
 	q := `SELECT * FROM meetings WHERE timestamp > $1 AND estate_id = $2`
 
 	rows, err := r.Query(ctx, q, time.Now(), time.Now(), estateID)
@@ -39,10 +43,15 @@ func (r *repo) GetMeetingsByEstateID(ctx context.Context, estateID string) ([]mo
 		meetings = append(meetings, meeting)
 	}
 
+	l.Trace(key, "passed GetMeetingsByEstateID repo layer")
+
 	return meetings, nil
 }
 
 func (r *repo) GetMeetingsByPhoneNumber(ctx context.Context, phoneNumber string) ([]models.Meeting, error) {
+	l := wrappers.ExtractLogger(ctx)
+	key := wrappers.ExtractIdempotencyKey(ctx)
+
 	q := `SELECT * FROM meetings WHERE timestamp > $1 AND visitor_phone = $2`
 
 	rows, err := r.Query(ctx, q, time.Now(), time.Now(), phoneNumber)
@@ -60,10 +69,15 @@ func (r *repo) GetMeetingsByPhoneNumber(ctx context.Context, phoneNumber string)
 		meetings = append(meetings, meeting)
 	}
 
+	l.Trace(key, "passed GetMeetingsByPhoneNumber repo layer")
+
 	return meetings, nil
 }
 
 func (r *repo) ArrangeMeeting(ctx context.Context, m models.Meeting) error {
+	l := wrappers.ExtractLogger(ctx)
+	key := wrappers.ExtractIdempotencyKey(ctx)
+
 	q := `INSERT INTO meetings (id,timestamp,estate_id,visitor_phone) VALUES ($1,$2,$3,$4)`
 
 	_, err := r.Exec(ctx, q, m.ID, m.Timestamp, m.EstateID, m.VisitorPhone)
@@ -71,10 +85,15 @@ func (r *repo) ArrangeMeeting(ctx context.Context, m models.Meeting) error {
 		return fmt.Errorf("failed to insert: %w", err)
 	}
 
+	l.Trace(key, "passed ArrangeMeeting repo layer")
+
 	return nil
 }
 
 func (r *repo) CancelMeeting(ctx context.Context, parameter models.CancelMeetingParameter) error {
+	l := wrappers.ExtractLogger(ctx)
+	key := wrappers.ExtractIdempotencyKey(ctx)
+
 	q := `DELETE FROM meetings WHERE id = $1 AND visitor_phone = $2`
 
 	_, err := r.Exec(ctx, q, parameter.ID, parameter.VisitorPhone)
@@ -82,10 +101,15 @@ func (r *repo) CancelMeeting(ctx context.Context, parameter models.CancelMeeting
 		return fmt.Errorf("failed to delete: %w", err)
 	}
 
+	l.Trace(key, "passed CancelMeeting repo layer")
+
 	return nil
 }
 
 func (r *repo) GetMeetingTimestamps(ctx context.Context, estateID string) ([]time.Time, error) {
+	l := wrappers.ExtractLogger(ctx)
+	key := wrappers.ExtractIdempotencyKey(ctx)
+
 	q := `SELECT timestamp FROM meetings WHERE timestamp > $1 AND estate_id = $2 ORDER BY timestamp`
 
 	rows, err := r.Query(ctx, q, time.Now(), estateID)
@@ -102,6 +126,8 @@ func (r *repo) GetMeetingTimestamps(ctx context.Context, estateID string) ([]tim
 
 		tStamps = append(tStamps, tStamp)
 	}
+
+	l.Trace(key, "passed GetMeetingTimestamps repo layer")
 
 	return tStamps, nil
 }

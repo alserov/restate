@@ -2,25 +2,73 @@ package metrics
 
 import (
 	"context"
-	"github.com/alserov/restate/metrics/pkg/models"
+	"encoding/json"
+	"fmt"
+	"github.com/IBM/sarama"
+	"github.com/alserov/restate/meetings/internal/utils"
+	"time"
 )
 
-type Producer interface {
-	Produce(ctx context.Context, message models.Message, topic string)
-}
-
 type Metrics interface {
-	Produce(ctx context.Context, message models.Message)
+	ObserveRequest(ctx context.Context, status int, dur time.Duration, name string) error
 }
 
-func NewMetrics(p Producer) *metrics {
-	return &metrics{p}
+var _ Metrics = &metrics{}
+
+func NewMetrics(addr string) *metrics {
+	cfg := sarama.NewConfig()
+
+	prod, err := sarama.NewAsyncProducer([]string{addr}, cfg)
+	if err != nil {
+		panic("failed to init metrics: " + err.Error())
+	}
+
+	return &metrics{p: prod}
 }
 
 type metrics struct {
-	Producer
+	p sarama.AsyncProducer
 }
 
-func (m *metrics) Produce(ctx context.Context, message models.Message) {
-	m.Producer.Produce(ctx, message, models.MetricsTopic)
+type (
+	TimePerRequestData struct {
+		ReqName string        `json:"reqName"`
+		Time    time.Duration `json:"time"`
+	}
+
+	RequestStatusData struct {
+		ReqName string `json:"reqName"`
+		Status  int    `json:"status"`
+	}
+)
+
+// ObserveRequest sends kafka message to broker, observes TimePerRequest and RequestStatus metrics
+func (m metrics) ObserveRequest(ctx context.Context, status int, dur time.Duration, name string) error {
+	timePerReq := TimePerRequestData{
+		ReqName: name,
+		Time:    dur,
+	}
+
+	b, err := json.Marshal(timePerReq)
+	if err != nil {
+		return utils.NewError(fmt.Sprintf("failed to marshal data: %v", err), utils.Internal)
+	}
+
+	m.p.Input() <- &sarama.ProducerMessage{Value: sarama.StringEncoder(b)}
+
+	// ====================
+
+	statusReq := RequestStatusData{
+		ReqName: name,
+		Status:  status,
+	}
+
+	b, err = json.Marshal(statusReq)
+	if err != nil {
+		return utils.NewError(fmt.Sprintf("failed to marshal data: %v", err), utils.Internal)
+	}
+
+	m.p.Input() <- &sarama.ProducerMessage{Value: sarama.StringEncoder(b)}
+
+	return nil
 }
