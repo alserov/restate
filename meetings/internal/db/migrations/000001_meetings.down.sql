@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS estate;
+DROP TABLE IF EXISTS images;

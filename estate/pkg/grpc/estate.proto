@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/alserov/restate/estate";
+
+package estate;
+
+service EstateService {
+  rpc GetEstateList(GetListParameters) returns (EstateList);
+  rpc GetEstateInfo(GetEstateInfoParameter) returns (Estate);
+
+  rpc CreateEstate(Estate) returns(google.protobuf.Empty);
+//  rpc EditEstate() returns ();
+  rpc DeleteEstate(DeleteEstateParameter) returns (google.protobuf.Empty);
+}
+
+message GetEstateInfoParameter {
+  string id = 1;
+}
+
+message DeleteEstateParameter {
+  string id = 1;
+}
+
+message GetListParameters {
+  float minPrice = 1;
+  float maxPrice = 2;
+  float square = 3;
+  string country = 4;
+  string city = 5;
+  int32 floor = 6;
+  uint32 limit = 7;
+  uint32 offset = 8;
+}
+
+message EstateList {
+  repeated EstateMainInfo List = 1;
+}
+
+message EstateMainInfo {
+  string id = 1;
+  string title = 2;
+  string country = 3;
+  string city = 4;
+  float  price = 5;
+  string mainImage = 6;
+}
+
+message Estate {
+  optional string id = 1;
+  string title = 2;
+  string description = 3;
+  float  price = 4;
+  string country = 5;
+  string city = 6;
+  string street = 7;
+  repeated string images = 8;
+  string mainImage = 9;
+  float  square = 10;
+  int32  floor = 11;
+}
