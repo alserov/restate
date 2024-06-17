@@ -3,6 +3,8 @@ package controller
 import (
 	"fmt"
 	"github.com/alserov/restate/gateway/internal/clients"
+	"github.com/alserov/restate/gateway/internal/log"
+	"github.com/alserov/restate/gateway/internal/metrics"
 	"github.com/alserov/restate/gateway/internal/models"
 	"github.com/alserov/restate/gateway/internal/utils"
 	"github.com/labstack/echo/v4"
@@ -12,6 +14,18 @@ import (
 
 type EstateHandler struct {
 	estateClient clients.EstateClient
+
+	logger log.Logger
+
+	metr metrics.Metrics
+}
+
+func NewEstateHandler(cl clients.EstateClient, metr metrics.Metrics, logger log.Logger) *EstateHandler {
+	return &EstateHandler{
+		estateClient: cl,
+		logger:       logger,
+		metr:         metr,
+	}
 }
 
 func (eh *EstateHandler) GetList(c echo.Context) error {

@@ -19,13 +19,13 @@ type Clients struct {
 	Meetings meetings.MeetingsServiceClient
 }
 
-func NewController(app *echo.Echo, lg log.Logger, metr metrics.Metrics, cls *Clients) *controller {
+func NewController(app *echo.Echo, metr metrics.Metrics, lg log.Logger, cls *Clients) *controller {
 	return &controller{
 		app:  app,
 		lg:   lg,
 		metr: metr,
 
-		EstateHandler:   &EstateHandler{estateClient: clients.NewEstateClient(cls.Estate)},
+		EstateHandler:   &EstateHandler{estateClient: clients.NewEstateClient(cls.Estate), logger: lg},
 		MeetingsHandler: &MeetingsHandler{meetingsClient: clients.NewMeetingsClient(cls.Meetings)},
 	}
 }
@@ -47,7 +47,7 @@ func (c *controller) SetupRoutes() {
 
 	// GET
 	estate.GET("/list", c.EstateHandler.GetList)
-	estate.GET("/info", c.EstateHandler.GetInfo)
+	estate.GET("/info/:id", c.EstateHandler.GetInfo)
 
 	meetings.GET("/meetings", c.MeetingsHandler.GetMeetings)
 	meetings.GET("/available", c.MeetingsHandler.GetAvailableTime)

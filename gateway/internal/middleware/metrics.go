@@ -1,7 +1,9 @@
 package middleware
 
 import (
+	"github.com/alserov/restate/gateway/internal/log"
 	"github.com/alserov/restate/gateway/internal/metrics"
+	"github.com/alserov/restate/gateway/internal/wrappers"
 	"github.com/labstack/echo/v4"
 	"time"
 )
@@ -13,7 +15,9 @@ func WithRequestObserver(metr metrics.Metrics) func(fn echo.HandlerFunc) echo.Ha
 			defer func() {
 				dur := time.Since(start)
 
-				metr.ObserveRequest(c.Request().Context(), c.Response().Status, dur, "")
+				if err := metr.ObserveRequest(c.Request().Context(), c.Response().Status, dur, ""); err != nil {
+					wrappers.ExtractLogger(c.Request().Context()).Warn("failed to observe request", log.WithData("warn", err.Error()))
+				}
 			}()
 
 			err := fn(c)

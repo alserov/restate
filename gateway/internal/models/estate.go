@@ -25,12 +25,12 @@ type (
 	}
 
 	EstateInfo struct {
-		Id        string
-		Title     string
-		Country   string
-		City      string
-		Price     float32
-		MainImage string
+		Id        string  `json:"id"`
+		Title     string  `json:"title"`
+		Country   string  `json:"country"`
+		City      string  `json:"city"`
+		Price     float32 `json:"price"`
+		MainImage string  `json:"mainImage"`
 	}
 
 	EstateList []EstateInfo

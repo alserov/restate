@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"errors"
-	"fmt"
 	estate "github.com/alserov/restate/estate/pkg/grpc"
 	"github.com/alserov/restate/gateway/internal/config"
 	"github.com/alserov/restate/gateway/internal/controller"
@@ -16,6 +15,8 @@ import (
 	"net/http"
 	"os/signal"
 	"syscall"
+
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func MustStart(cfg *config.Config) {
@@ -26,7 +27,7 @@ func MustStart(cfg *config.Config) {
 	lg.Info("initialized server", nil)
 
 	// metrics
-	metr := metrics.NewMetrics()
+	metr := metrics.NewMetrics(cfg.Broker.Addr)
 	lg.Info("initialized metrics", nil)
 
 	// services
@@ -35,7 +36,7 @@ func MustStart(cfg *config.Config) {
 	lg.Info("dialed services", nil)
 
 	// routes
-	ctrl := controller.NewController(app, lg, metr, &controller.Clients{
+	ctrl := controller.NewController(app, metr, lg, &controller.Clients{
 		Estate:   estateGRPCClient,
 		Meetings: meetingsGRPCClient,
 	})
@@ -44,13 +45,15 @@ func MustStart(cfg *config.Config) {
 
 	// server start
 	run(func() {
-		if err := app.Start(fmt.Sprintf("%s", cfg.Addr)); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		if err := app.Start(cfg.Addr); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			panic("failed to start server: " + err.Error())
 		}
 	})
 
 	lg.Info("shutdown server", nil)
-	app.Close()
+	if err := app.Shutdown(context.Background()); err != nil {
+		lg.Error("failed to shutdown server", log.WithData("error", err.Error()))
+	}
 }
 
 func run(fn func()) {
