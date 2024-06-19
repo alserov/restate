@@ -2,11 +2,11 @@ package app
 
 import (
 	"context"
-	"github.com/alserov/restate/gateway/internal/async"
-	"github.com/alserov/restate/gateway/internal/metrics"
+	"github.com/alserov/restate/meetings/internal/async"
 	"github.com/alserov/restate/meetings/internal/config"
 	"github.com/alserov/restate/meetings/internal/db/posgtres"
 	"github.com/alserov/restate/meetings/internal/log"
+	"github.com/alserov/restate/meetings/internal/metrics"
 	"github.com/alserov/restate/meetings/internal/server/grpc"
 	"github.com/alserov/restate/meetings/internal/service"
 	"net"
