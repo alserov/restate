@@ -6,6 +6,7 @@ import (
 	"github.com/alserov/restate/meetings/internal/db"
 	"github.com/alserov/restate/meetings/internal/service/models"
 	"github.com/google/uuid"
+	"sort"
 	"time"
 )
 
@@ -78,6 +79,10 @@ func (s *service) GetAvailableTimeForMeeting(ctx context.Context, estateID strin
 }
 
 func selectAvailableTStampsForMeeting(tStamps []time.Time) []time.Time {
+	sort.Slice(tStamps, func(i, j int) bool {
+		return tStamps[i].Unix() < tStamps[j].Unix()
+	})
+
 	var availableTStamps []time.Time
 
 	// filling timestamps before first

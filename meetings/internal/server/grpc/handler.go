@@ -2,8 +2,8 @@ package grpc
 
 import (
 	"context"
+	"github.com/alserov/restate/gateway/internal/metrics"
 	"github.com/alserov/restate/meetings/internal/log"
-	"github.com/alserov/restate/meetings/internal/metrics"
 	"github.com/alserov/restate/meetings/internal/service"
 	"github.com/alserov/restate/meetings/internal/utils"
 	meetings "github.com/alserov/restate/meetings/pkg/grpc"
