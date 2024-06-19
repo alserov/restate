@@ -2,11 +2,10 @@ package async
 
 import (
 	"context"
-	"github.com/alserov/restate/metrics/pkg/models"
 )
 
 type Producer interface {
-	Produce(ctx context.Context, message models.Message, topic string)
+	Produce(ctx context.Context, message []byte)
 }
 
 type ProducerType int
@@ -15,10 +14,10 @@ const (
 	Kafka ProducerType = iota
 )
 
-func NewProducer(t ProducerType, targetAddr string) Producer {
+func NewProducer(t ProducerType, targetAddr, topic string) Producer {
 	switch t {
 	case Kafka:
-		return newKafka(targetAddr)
+		return newKafka(targetAddr, topic)
 	}
 
 	return nil

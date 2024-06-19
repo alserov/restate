@@ -28,7 +28,7 @@ func MustStart(cfg *config.Config) {
 	lg.Info("initialized server", nil)
 
 	// metrics
-	metr := metrics.NewMetrics(async.NewProducer(async.Kafka, cfg.Broker.Addr))
+	metr := metrics.NewMetrics(async.NewProducer(async.Kafka, cfg.Broker.Addr, cfg.Broker.Topics.Metrics))
 	lg.Info("initialized metrics", nil)
 
 	// services

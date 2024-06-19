@@ -2,13 +2,15 @@ package async
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/IBM/sarama"
-	"github.com/alserov/restate/metrics/pkg/models"
+	"github.com/alserov/restate/gateway/internal/log"
+	"github.com/alserov/restate/gateway/internal/wrappers"
 )
 
 var _ Producer = &kafka{}
 
-func newKafka(addr string) *kafka {
+func newKafka(addr string, topic string) *kafka {
 	prodCfg := sarama.NewConfig()
 	prodCfg.Producer.Partitioner = sarama.NewRandomPartitioner
 	prodCfg.Producer.RequiredAcks = sarama.WaitForAll
@@ -19,14 +21,20 @@ func newKafka(addr string) *kafka {
 		panic("failed to init producer: " + err.Error())
 	}
 
-	return &kafka{prod}
+	return &kafka{prod, topic}
 }
 
 type kafka struct {
 	sarama.AsyncProducer
+
+	topic string
 }
 
-func (k kafka) Produce(ctx context.Context, message models.Message, topic string) {
-	//TODO implement me
-	panic("implement me")
+func (k kafka) Produce(ctx context.Context, message []byte) {
+	b, err := json.Marshal(message)
+	if err != nil {
+		wrappers.ExtractLogger(ctx).Error("failed to unmarshal", log.WithData("error", err.Error()))
+	}
+
+	k.AsyncProducer.Input() <- &sarama.ProducerMessage{Value: sarama.StringEncoder(b), Topic: k.topic}
 }
