@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"github.com/alserov/restate/meetings/internal/async"
 	"github.com/alserov/restate/meetings/internal/config"
 	"github.com/alserov/restate/meetings/internal/db/posgtres"
 	"github.com/alserov/restate/meetings/internal/log"
@@ -19,7 +20,7 @@ func MustStart(cfg *config.Config) {
 	db, closeConn := posgtres.MustConnect(cfg.DB.Dsn())
 	defer closeConn()
 
-	metr := metrics.NewMetrics(cfg.Broker.Addr)
+	metr := metrics.NewMetrics(async.NewProducer(async.Kafka, cfg.Broker.Addr, cfg.Broker.Topics.Metrics))
 	repo := posgtres.NewRepository(db)
 	srvc := service.NewService(repo)
 	srvr := grpc.RegisterHandler(srvc, metr, lg)

@@ -14,7 +14,10 @@ type Config struct {
 }
 
 type Kafka struct {
-	Addr string
+	Addr   string
+	Topics struct {
+		Metrics string
+	}
 }
 
 type Postgres struct {
