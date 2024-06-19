@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	estate "github.com/alserov/restate/estate/pkg/grpc"
+	"github.com/alserov/restate/gateway/internal/async"
 	"github.com/alserov/restate/gateway/internal/config"
 	"github.com/alserov/restate/gateway/internal/controller"
 	"github.com/alserov/restate/gateway/internal/log"
@@ -27,7 +28,7 @@ func MustStart(cfg *config.Config) {
 	lg.Info("initialized server", nil)
 
 	// metrics
-	metr := metrics.NewMetrics(cfg.Broker.Addr)
+	metr := metrics.NewMetrics(async.NewProducer(async.Kafka, cfg.Broker.Addr))
 	lg.Info("initialized metrics", nil)
 
 	// services

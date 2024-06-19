@@ -1,73 +1,99 @@
-package service
+package tests
 
 import (
-	"fmt"
-	"github.com/stretchr/testify/require"
+	"context"
+	"github.com/alserov/restate/meetings/internal/service"
+	"github.com/alserov/restate/meetings/internal/service/models"
+	"github.com/alserov/restate/meetings/internal/tests/mocks"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/suite"
 	"testing"
 	"time"
 )
 
-func TestSelectAvailableTStampsForMeeting(t *testing.T) {
-	tests := []struct {
-		Stamps []time.Time
+func TestService(t *testing.T) {
+	suite.Run(t, new(ServiceTestSuite))
+}
 
-		BeforeStamps []time.Time
-		InnerStamps  []time.Time
-		OuterStamps  []time.Time
-	}{
+type ServiceTestSuite struct {
+	suite.Suite
+
+	ctrl *gomock.Controller
+}
+
+func (s *ServiceTestSuite) SetupTest() {
+	s.ctrl = gomock.NewController(s.T())
+}
+
+func (s *ServiceTestSuite) TeardownTest() {
+	s.ctrl.Finish()
+}
+
+func (s *ServiceTestSuite) TestGetMeetingsByEstateID() {
+	repo := mocks.NewMockRepository(s.ctrl)
+	id := "id"
+	expectedMtngs := []models.Meeting{
 		{
-			Stamps: []time.Time{
-				time.Date(2000, 9, 9, 12, 0, 0, 0, time.UTC),
-				time.Date(2000, 9, 9, 13, 30, 0, 0, time.UTC)},
-			BeforeStamps: []time.Time{
-				time.Date(2000, 9, 9, 10, 30, 0, 0, time.UTC),
-				time.Date(2000, 9, 9, 9, 0, 0, 0, time.UTC),
-			},
-			InnerStamps: []time.Time{},
-			OuterStamps: []time.Time{
-				time.Date(2000, 9, 9, 15, 0, 0, 0, time.UTC),
-				time.Date(2000, 9, 9, 16, 30, 0, 0, time.UTC),
-			},
-		},
-		{
-			Stamps: []time.Time{
-				time.Date(2000, 9, 9, 12, 0, 0, 0, time.UTC),
-				time.Date(2000, 9, 9, 15, 00, 0, 0, time.UTC)},
-			BeforeStamps: []time.Time{
-				time.Date(2000, 9, 9, 10, 30, 0, 0, time.UTC),
-				time.Date(2000, 9, 9, 9, 0, 0, 0, time.UTC),
-			},
-			InnerStamps: []time.Time{time.Date(2000, 9, 9, 13, 30, 0, 0, time.UTC)},
-			OuterStamps: []time.Time{time.Date(2000, 9, 9, 16, 30, 0, 0, time.UTC)},
-		},
-		{
-			Stamps: []time.Time{
-				time.Date(2000, 9, 9, 12, 0, 0, 0, time.UTC),
-				time.Date(2000, 9, 9, 15, 00, 0, 0, time.UTC)},
-			BeforeStamps: []time.Time{
-				time.Date(2000, 9, 9, 10, 30, 0, 0, time.UTC),
-				time.Date(2000, 9, 9, 9, 0, 0, 0, time.UTC),
-			},
-			InnerStamps: []time.Time{time.Date(2000, 9, 9, 13, 30, 0, 0, time.UTC)},
-			OuterStamps: []time.Time{time.Date(2000, 9, 9, 16, 30, 0, 0, time.UTC)},
+			ID:           "id",
+			Timestamp:    time.Now(),
+			EstateID:     id,
+			VisitorPhone: "12345",
 		},
 	}
 
-	for idx, tc := range tests {
-		t.Run(fmt.Sprintf("tc: %d", idx), func(t *testing.T) {
-			stamps := selectAvailableTStampsForMeeting(tc.Stamps)
+	repo.EXPECT().
+		GetMeetingsByEstateID(gomock.Any(), gomock.Eq(id)).
+		Return(expectedMtngs, nil).
+		Times(1)
 
-			for i, befTStamp := range tc.BeforeStamps {
-				require.Equal(t, befTStamp, stamps[i])
-			}
+	srvc := service.NewService(repo)
 
-			for i, inTStamp := range tc.InnerStamps {
-				require.Equal(t, inTStamp, stamps[i+len(tc.BeforeStamps)])
-			}
+	mtngs, err := srvc.GetMeetingsByEstateID(context.Background(), id)
+	s.Require().Nil(err)
+	s.Require().Equal(expectedMtngs, mtngs)
+}
 
-			for i, outTStamp := range tc.OuterStamps {
-				require.Equal(t, outTStamp, stamps[i+len(tc.InnerStamps)+len(tc.BeforeStamps)])
-			}
-		})
+func (s *ServiceTestSuite) TestGetMeetingsByPhoneNumber() {
+	repo := mocks.NewMockRepository(s.ctrl)
+	phoneNumber := "1"
+	expectedMtngs := []models.Meeting{
+		{
+			ID:           "id",
+			Timestamp:    time.Now(),
+			EstateID:     "id",
+			VisitorPhone: phoneNumber,
+		},
 	}
+
+	repo.EXPECT().
+		GetMeetingsByPhoneNumber(gomock.Any(), gomock.Eq(phoneNumber)).
+		Return(expectedMtngs, nil).
+		Times(1)
+
+	srvc := service.NewService(repo)
+
+	mtngs, err := srvc.GetMeetingsByPhoneNumber(context.Background(), phoneNumber)
+	s.Require().Nil(err)
+	s.Require().Equal(expectedMtngs, mtngs)
+}
+
+func (s *ServiceTestSuite) TestArrangeMeeting() {
+	repo := mocks.NewMockRepository(s.ctrl)
+	mtng := models.Meeting{
+		ID:           "id",
+		Timestamp:    time.Now(),
+		EstateID:     "id",
+		VisitorPhone: "1",
+	}
+
+	repo.EXPECT().
+		ArrangeMeeting(gomock.Any(), gomock.Eq(phoneNumber)).
+		Return(expectedMtngs, nil).
+		Times(1)
+
+	srvc := service.NewService(repo)
+
+	mtngs, err := srvc.GetMeetingsByPhoneNumber(context.Background(), phoneNumber)
+	s.Require().Nil(err)
+	s.Require().Equal(expectedMtngs, mtngs)
 }
