@@ -8,7 +8,7 @@ import (
 
 var _ Producer = &kafka{}
 
-func newKafka() {
+func newKafka(addr string) *kafka {
 	prodCfg := sarama.NewConfig()
 	prodCfg.Producer.Partitioner = sarama.NewRandomPartitioner
 	prodCfg.Producer.RequiredAcks = sarama.WaitForAll
@@ -18,9 +18,12 @@ func newKafka() {
 	if err != nil {
 		panic("failed to init producer: " + err.Error())
 	}
+
+	return &kafka{prod}
 }
 
 type kafka struct {
+	sarama.AsyncProducer
 }
 
 func (k kafka) Produce(ctx context.Context, message models.Message, topic string) {

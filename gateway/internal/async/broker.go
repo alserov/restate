@@ -16,5 +16,10 @@ const (
 )
 
 func NewProducer(t ProducerType, targetAddr string) Producer {
+	switch t {
+	case Kafka:
+		return newKafka(targetAddr)
+	}
+
 	return nil
 }
