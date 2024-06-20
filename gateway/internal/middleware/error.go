@@ -1,8 +1,8 @@
 package middleware
 
 import (
+	"github.com/alserov/restate/gateway/internal/middleware/wrappers"
 	"github.com/alserov/restate/gateway/internal/utils"
-	"github.com/alserov/restate/gateway/internal/wrappers"
 	"github.com/labstack/echo/v4"
 )
 

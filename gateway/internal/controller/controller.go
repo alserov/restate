@@ -6,6 +6,7 @@ import (
 	"github.com/alserov/restate/gateway/internal/log"
 	"github.com/alserov/restate/gateway/internal/metrics"
 	"github.com/alserov/restate/gateway/internal/middleware"
+	"github.com/alserov/restate/gateway/internal/middleware/wrappers"
 	meetings "github.com/alserov/restate/meetings/pkg/grpc"
 	"github.com/labstack/echo/v4"
 )
@@ -40,7 +41,7 @@ type controller struct {
 }
 
 func (c *controller) SetupRoutes() {
-	v1 := c.app.Group("/v1", middleware.WithLogger(c.lg), middleware.WithRequestObserver(c.metr), middleware.WithErrorHandler)
+	v1 := c.app.Group("/v1", wrappers.WithLogger(c.lg), middleware.WithRequestObserver(c.metr), middleware.WithErrorHandler)
 
 	estate := v1.Group("/estate")
 	meetings := v1.Group("/meetings")

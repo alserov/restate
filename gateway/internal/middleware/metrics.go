@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/alserov/restate/gateway/internal/log"
 	"github.com/alserov/restate/gateway/internal/metrics"
-	"github.com/alserov/restate/gateway/internal/wrappers"
+	"github.com/alserov/restate/gateway/internal/middleware/wrappers"
 	"github.com/labstack/echo/v4"
 	"time"
 )
