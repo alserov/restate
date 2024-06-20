@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"github.com/IBM/sarama"
 	"github.com/alserov/restate/meetings/internal/log"
-	"github.com/alserov/restate/meetings/internal/middleware"
+	"github.com/alserov/restate/meetings/internal/middleware/wrappers"
 )
 
 var _ Producer = &kafka{}
@@ -33,7 +33,7 @@ type kafka struct {
 func (k kafka) Produce(ctx context.Context, message any) {
 	b, err := json.Marshal(message)
 	if err != nil {
-		middleware.ExtractLogger(ctx).Error("failed to unmarshal", log.WithData("error", err.Error()))
+		wrappers.ExtractLogger(ctx).Error("failed to unmarshal", log.WithData("error", err.Error()))
 	}
 
 	k.AsyncProducer.Input() <- &sarama.ProducerMessage{Value: sarama.StringEncoder(b), Topic: k.topic}

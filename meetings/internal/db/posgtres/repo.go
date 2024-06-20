@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/alserov/restate/meetings/internal/db"
-	"github.com/alserov/restate/meetings/internal/middleware"
+	"github.com/alserov/restate/meetings/internal/middleware/wrappers"
 	"github.com/alserov/restate/meetings/internal/service/models"
 	"github.com/jackc/pgx/v5"
 	"time"
@@ -23,8 +23,8 @@ type repo struct {
 }
 
 func (r *repo) GetMeetingsByEstateID(ctx context.Context, estateID string) ([]models.Meeting, error) {
-	l := middleware.ExtractLogger(ctx)
-	key := middleware.ExtractIdempotencyKey(ctx)
+	l := wrappers.ExtractLogger(ctx)
+	key := wrappers.ExtractIdempotencyKey(ctx)
 
 	q := `SELECT * FROM meetings WHERE timestamp > $1 AND estate_id = $2`
 
@@ -49,8 +49,8 @@ func (r *repo) GetMeetingsByEstateID(ctx context.Context, estateID string) ([]mo
 }
 
 func (r *repo) GetMeetingsByPhoneNumber(ctx context.Context, phoneNumber string) ([]models.Meeting, error) {
-	l := middleware.ExtractLogger(ctx)
-	key := middleware.ExtractIdempotencyKey(ctx)
+	l := wrappers.ExtractLogger(ctx)
+	key := wrappers.ExtractIdempotencyKey(ctx)
 
 	q := `SELECT * FROM meetings WHERE timestamp > $1 AND visitor_phone = $2`
 
@@ -75,8 +75,8 @@ func (r *repo) GetMeetingsByPhoneNumber(ctx context.Context, phoneNumber string)
 }
 
 func (r *repo) ArrangeMeeting(ctx context.Context, m models.Meeting) error {
-	l := middleware.ExtractLogger(ctx)
-	key := middleware.ExtractIdempotencyKey(ctx)
+	l := wrappers.ExtractLogger(ctx)
+	key := wrappers.ExtractIdempotencyKey(ctx)
 
 	q := `INSERT INTO meetings (id,timestamp,estate_id,visitor_phone) VALUES ($1,$2,$3,$4)`
 
@@ -91,8 +91,8 @@ func (r *repo) ArrangeMeeting(ctx context.Context, m models.Meeting) error {
 }
 
 func (r *repo) CancelMeeting(ctx context.Context, parameter models.CancelMeetingParameter) error {
-	l := middleware.ExtractLogger(ctx)
-	key := middleware.ExtractIdempotencyKey(ctx)
+	l := wrappers.ExtractLogger(ctx)
+	key := wrappers.ExtractIdempotencyKey(ctx)
 
 	q := `DELETE FROM meetings WHERE id = $1 AND visitor_phone = $2`
 
@@ -107,8 +107,8 @@ func (r *repo) CancelMeeting(ctx context.Context, parameter models.CancelMeeting
 }
 
 func (r *repo) GetMeetingTimestamps(ctx context.Context, estateID string) ([]time.Time, error) {
-	l := middleware.ExtractLogger(ctx)
-	key := middleware.ExtractIdempotencyKey(ctx)
+	l := wrappers.ExtractLogger(ctx)
+	key := wrappers.ExtractIdempotencyKey(ctx)
 
 	q := `SELECT timestamp FROM meetings WHERE timestamp > $1 AND estate_id = $2 ORDER BY timestamp`
 
