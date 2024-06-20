@@ -41,7 +41,11 @@ type controller struct {
 }
 
 func (c *controller) SetupRoutes() {
-	v1 := c.app.Group("/v1", wrappers.WithLogger(c.lg), middleware.WithRequestObserver(c.metr), middleware.WithErrorHandler)
+	v1 := c.app.Group("/v1",
+		wrappers.WithLogger(c.lg),
+		wrappers.WithIdempotencyKey,
+		middleware.WithRequestObserver(c.metr),
+		middleware.WithErrorHandler)
 
 	estate := v1.Group("/estate")
 	meetings := v1.Group("/meetings")
