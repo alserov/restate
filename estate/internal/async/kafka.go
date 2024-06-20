@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"github.com/IBM/sarama"
 	"github.com/alserov/restate/estate/internal/log"
-	"github.com/alserov/restate/estate/internal/wrappers"
+	"github.com/alserov/restate/estate/internal/middleware/wrappers"
 )
 
 var _ Producer = &kafka{}

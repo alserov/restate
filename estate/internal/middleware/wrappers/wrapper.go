@@ -3,6 +3,7 @@ package wrappers
 import (
 	"context"
 	"github.com/alserov/restate/estate/internal/log"
+	"github.com/google/uuid"
 )
 
 func WithLogger(ctx context.Context, args ...any) context.Context {
@@ -23,3 +24,18 @@ func ExtractLogger(ctx context.Context) log.Logger {
 
 	return l
 }
+
+func WithIdempotencyKey(ctx context.Context, args ...any) context.Context {
+	return context.WithValue(ctx, ContextIdempotencyKey, uuid.NewString())
+}
+
+func ExtractIdempotencyKey(ctx context.Context) string {
+	return ctx.Value(ContextIdempotencyKey).(string)
+}
+
+type ContextKey string
+
+var (
+	ContextLogger         ContextKey = "log"
+	ContextIdempotencyKey ContextKey = "key"
+)
