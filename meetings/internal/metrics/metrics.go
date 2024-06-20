@@ -7,7 +7,7 @@ import (
 )
 
 type Metrics interface {
-	ObserveRequest(ctx context.Context, status int, dur time.Duration, name string) error
+	ObserveRequest(ctx context.Context, status int, dur time.Duration, key string) error
 }
 
 func NewMetrics(p async.Producer) *metrics {
@@ -20,18 +20,18 @@ type metrics struct {
 
 type (
 	TimePerRequestData struct {
-		ReqName string        `json:"reqName"`
-		Time    time.Duration `json:"time"`
+		Key  string        `json:"reqName"`
+		Time time.Duration `json:"time"`
 	}
 
 	RequestStatusData struct {
-		ReqName string `json:"reqName"`
-		Status  int    `json:"status"`
+		Key    string `json:"reqName"`
+		Status int    `json:"status"`
 	}
 )
 
-func (m *metrics) ObserveRequest(ctx context.Context, status int, dur time.Duration, name string) error {
-	m.Producer.Produce(ctx, TimePerRequestData{ReqName: name, Time: dur})
-	m.Producer.Produce(ctx, RequestStatusData{ReqName: name, Status: status})
+func (m *metrics) ObserveRequest(ctx context.Context, status int, dur time.Duration, key string) error {
+	m.Producer.Produce(ctx, TimePerRequestData{Key: key, Time: dur})
+	m.Producer.Produce(ctx, RequestStatusData{Key: key, Status: status})
 	return nil
 }

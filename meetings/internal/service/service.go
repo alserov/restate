@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/alserov/restate/meetings/internal/db"
+	"github.com/alserov/restate/meetings/internal/middleware"
 	"github.com/alserov/restate/meetings/internal/service/models"
-	"github.com/alserov/restate/meetings/internal/wrappers"
 	"github.com/google/uuid"
 	"time"
 )
@@ -30,8 +30,8 @@ type service struct {
 }
 
 func (s *service) GetMeetingsByEstateID(ctx context.Context, estateID string) ([]models.Meeting, error) {
-	l := wrappers.ExtractLogger(ctx)
-	key := wrappers.ExtractIdempotencyKey(ctx)
+	l := middleware.ExtractLogger(ctx)
+	key := middleware.ExtractIdempotencyKey(ctx)
 
 	l.Trace(key, "passed GetMeetingsByEstateID service layer")
 
@@ -44,8 +44,8 @@ func (s *service) GetMeetingsByEstateID(ctx context.Context, estateID string) ([
 }
 
 func (s *service) GetMeetingsByPhoneNumber(ctx context.Context, phoneNumber string) ([]models.Meeting, error) {
-	l := wrappers.ExtractLogger(ctx)
-	key := wrappers.ExtractIdempotencyKey(ctx)
+	l := middleware.ExtractLogger(ctx)
+	key := middleware.ExtractIdempotencyKey(ctx)
 
 	l.Trace(key, "passed GetMeetingsByPhoneNumber service layer")
 
@@ -58,8 +58,8 @@ func (s *service) GetMeetingsByPhoneNumber(ctx context.Context, phoneNumber stri
 }
 
 func (s *service) ArrangeMeeting(ctx context.Context, m models.Meeting) error {
-	l := wrappers.ExtractLogger(ctx)
-	key := wrappers.ExtractIdempotencyKey(ctx)
+	l := middleware.ExtractLogger(ctx)
+	key := middleware.ExtractIdempotencyKey(ctx)
 
 	l.Trace(key, "passed ArrangeMeeting service layer")
 
@@ -74,8 +74,8 @@ func (s *service) ArrangeMeeting(ctx context.Context, m models.Meeting) error {
 }
 
 func (s *service) CancelMeeting(ctx context.Context, parameter models.CancelMeetingParameter) error {
-	l := wrappers.ExtractLogger(ctx)
-	key := wrappers.ExtractIdempotencyKey(ctx)
+	l := middleware.ExtractLogger(ctx)
+	key := middleware.ExtractIdempotencyKey(ctx)
 
 	l.Trace(key, "passed CancelMeeting service layer")
 
@@ -88,8 +88,8 @@ func (s *service) CancelMeeting(ctx context.Context, parameter models.CancelMeet
 }
 
 func (s *service) GetAvailableTimeForMeeting(ctx context.Context, estateID string) ([]time.Time, error) {
-	l := wrappers.ExtractLogger(ctx)
-	key := wrappers.ExtractIdempotencyKey(ctx)
+	l := middleware.ExtractLogger(ctx)
+	key := middleware.ExtractIdempotencyKey(ctx)
 
 	l.Trace(key, "passed GetAvailableTimeForMeeting service layer")
 

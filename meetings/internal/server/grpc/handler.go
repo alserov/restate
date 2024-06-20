@@ -4,9 +4,9 @@ import (
 	"context"
 	"github.com/alserov/restate/meetings/internal/log"
 	"github.com/alserov/restate/meetings/internal/metrics"
+	"github.com/alserov/restate/meetings/internal/middleware"
 	"github.com/alserov/restate/meetings/internal/service"
 	"github.com/alserov/restate/meetings/internal/utils"
-	"github.com/alserov/restate/meetings/internal/wrappers"
 	meetings "github.com/alserov/restate/meetings/pkg/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
@@ -15,7 +15,13 @@ import (
 )
 
 func RegisterHandler(srvc service.Service, m metrics.Metrics, l log.Logger) *grpc.Server {
-	srvr := grpc.NewServer(wrappers.WithGRPC(wrappers.WithLogger, wrappers.WithIdempotencyKey))
+	srvr := grpc.NewServer(
+		middleware.WithWrapper(
+			middleware.WithLogger,
+			middleware.WithIdempotencyKey,
+		),
+		middleware.WithRequestObserver(m),
+	)
 	meetings.RegisterMeetingsServiceServer(srvr, &handler{srvc: srvc, logger: l, metr: m})
 	return srvr
 }
@@ -42,7 +48,7 @@ func (h *handler) GetMeetingsByEstateID(ctx context.Context, parameter *meetings
 		}
 	}()
 
-	h.logger.Trace(wrappers.ExtractIdempotencyKey(ctx), "passed GetEstateList server layer")
+	h.logger.Trace(middleware.ExtractIdempotencyKey(ctx), "passed GetEstateList server layer")
 
 	mtngs, err := h.srvc.GetMeetingsByEstateID(ctx, parameter.EstateID)
 	if err != nil {
@@ -64,7 +70,7 @@ func (h *handler) GetMeetingsByPhoneNumber(ctx context.Context, parameter *meeti
 		}
 	}()
 
-	h.logger.Trace(wrappers.ExtractIdempotencyKey(ctx), "passed GetMeetingsByPhoneNumber server layer")
+	h.logger.Trace(middleware.ExtractIdempotencyKey(ctx), "passed GetMeetingsByPhoneNumber server layer")
 
 	mtngs, err := h.srvc.GetMeetingsByPhoneNumber(ctx, parameter.PhoneNumber)
 	if err != nil {
@@ -86,7 +92,7 @@ func (h *handler) ArrangeMeeting(ctx context.Context, meeting *meetings.Meeting)
 		}
 	}()
 
-	h.logger.Trace(wrappers.ExtractIdempotencyKey(ctx), "passed ArrangeMeeting server layer")
+	h.logger.Trace(middleware.ExtractIdempotencyKey(ctx), "passed ArrangeMeeting server layer")
 
 	err := h.srvc.ArrangeMeeting(ctx, h.conv.ToMeeting(meeting))
 	if err != nil {
@@ -108,7 +114,7 @@ func (h *handler) CancelMeeting(ctx context.Context, parameter *meetings.CancelM
 		}
 	}()
 
-	h.logger.Trace(wrappers.ExtractIdempotencyKey(ctx), "passed CancelMeeting server layer")
+	h.logger.Trace(middleware.ExtractIdempotencyKey(ctx), "passed CancelMeeting server layer")
 
 	err := h.srvc.CancelMeeting(ctx, h.conv.ToCancelMeetingParameter(parameter))
 	if err != nil {
@@ -130,7 +136,7 @@ func (h *handler) GetAvailableTimeForMeeting(ctx context.Context, parameter *mee
 		}
 	}()
 
-	h.logger.Trace(wrappers.ExtractIdempotencyKey(ctx), "passed GetAvailableTimeForMeeting server layer")
+	h.logger.Trace(middleware.ExtractIdempotencyKey(ctx), "passed GetAvailableTimeForMeeting server layer")
 
 	tStamps, err := h.srvc.GetAvailableTimeForMeeting(ctx, parameter.EstateID)
 	if err != nil {
