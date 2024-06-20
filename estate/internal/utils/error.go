@@ -3,7 +3,6 @@ package utils
 import (
 	"errors"
 	"fmt"
-	"github.com/alserov/restate/estate/internal/log"
 	"google.golang.org/grpc/codes"
 )
 
@@ -20,7 +19,7 @@ func NewError(msg string, status ErrorStatus) error {
 	return &err{msg: msg, status: status}
 }
 
-func FromError(l log.Logger, in error) (string, codes.Code) {
+func FromError(in error) (string, codes.Code) {
 	var e *err
 	if !errors.As(in, &e) {
 		return fmt.Sprintf("unknown error: %v", in), codes.Internal
@@ -32,10 +31,8 @@ func FromError(l log.Logger, in error) (string, codes.Code) {
 	case NotFound:
 		return e.msg, codes.NotFound
 	case Internal:
-		l.Error(in.Error(), nil)
 		return "internal error", codes.Internal
 	default:
-		l.Error(fmt.Sprintf("unknown status: %s", in.Error()), nil)
 		return "internal error", codes.Internal
 	}
 }

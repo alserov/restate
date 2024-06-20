@@ -9,6 +9,15 @@ type Config struct {
 	Env  string
 	Addr string
 	DB   Postgres
+
+	Broker Kafka
+}
+
+type Kafka struct {
+	Addr   string
+	Topics struct {
+		Metrics string
+	}
 }
 
 type Postgres struct {
