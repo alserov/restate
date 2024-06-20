@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/alserov/restate/estate/internal/db"
-	"github.com/alserov/restate/estate/internal/log"
+	"github.com/alserov/restate/estate/internal/middleware/wrappers"
 	"github.com/alserov/restate/estate/internal/service/models"
 	"github.com/google/uuid"
 )
@@ -28,9 +28,7 @@ type service struct {
 }
 
 func (s *service) GetEstateInfo(ctx context.Context, estateID string) (models.Estate, error) {
-	l := log.FromCtx(ctx)
-
-	l.Trace(ctx, "passed GetEstateInfo service layer")
+	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed GetEstateInfo service layer")
 
 	estate, err := s.repo.GetEstateInfo(ctx, estateID)
 	if err != nil {
@@ -43,9 +41,7 @@ func (s *service) GetEstateInfo(ctx context.Context, estateID string) (models.Es
 func (s *service) CreateEstate(ctx context.Context, estate models.Estate) error {
 	estate.ID = uuid.NewString()
 
-	l := log.FromCtx(ctx)
-
-	l.Trace(ctx, "passed CreateEstate service layer")
+	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed CreateEstate service layer")
 
 	err := s.repo.CreateEstate(ctx, estate)
 	if err != nil {
@@ -56,9 +52,7 @@ func (s *service) CreateEstate(ctx context.Context, estate models.Estate) error 
 }
 
 func (s *service) DeleteEstate(ctx context.Context, estateID string) error {
-	l := log.FromCtx(ctx)
-
-	l.Trace(ctx, "passed DeleteEstate service layer")
+	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed DeleteEstate service layer")
 
 	err := s.repo.DeleteEstate(ctx, estateID)
 	if err != nil {
@@ -69,9 +63,7 @@ func (s *service) DeleteEstate(ctx context.Context, estateID string) error {
 }
 
 func (s *service) GetEstateList(ctx context.Context, param models.GetEstateListParameters) ([]models.EstateMainInfo, error) {
-	l := log.FromCtx(ctx)
-
-	l.Trace(ctx, "passed GetEstateLis service layer")
+	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed GetEstateList service layer")
 
 	list, err := s.repo.GetEstateList(ctx, param)
 	if err != nil {
