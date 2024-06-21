@@ -30,10 +30,7 @@ type service struct {
 }
 
 func (s *service) GetMeetingsByEstateID(ctx context.Context, estateID string) ([]models.Meeting, error) {
-	l := wrappers.ExtractLogger(ctx)
-	key := wrappers.ExtractIdempotencyKey(ctx)
-
-	l.Trace(key, "passed GetMeetingsByEstateID service layer")
+	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed GetMeetingsByEstateID service layer")
 
 	mtngs, err := s.repo.GetMeetingsByEstateID(ctx, estateID)
 	if err != nil {
@@ -44,10 +41,7 @@ func (s *service) GetMeetingsByEstateID(ctx context.Context, estateID string) ([
 }
 
 func (s *service) GetMeetingsByPhoneNumber(ctx context.Context, phoneNumber string) ([]models.Meeting, error) {
-	l := wrappers.ExtractLogger(ctx)
-	key := wrappers.ExtractIdempotencyKey(ctx)
-
-	l.Trace(key, "passed GetMeetingsByPhoneNumber service layer")
+	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed GetMeetingsByPhoneNumber service layer")
 
 	mtngs, err := s.repo.GetMeetingsByPhoneNumber(ctx, phoneNumber)
 	if err != nil {
@@ -58,10 +52,7 @@ func (s *service) GetMeetingsByPhoneNumber(ctx context.Context, phoneNumber stri
 }
 
 func (s *service) ArrangeMeeting(ctx context.Context, m models.Meeting) error {
-	l := wrappers.ExtractLogger(ctx)
-	key := wrappers.ExtractIdempotencyKey(ctx)
-
-	l.Trace(key, "passed ArrangeMeeting service layer")
+	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed ArrangeMeeting service layer")
 
 	m.ID = uuid.NewString()
 
@@ -74,10 +65,7 @@ func (s *service) ArrangeMeeting(ctx context.Context, m models.Meeting) error {
 }
 
 func (s *service) CancelMeeting(ctx context.Context, parameter models.CancelMeetingParameter) error {
-	l := wrappers.ExtractLogger(ctx)
-	key := wrappers.ExtractIdempotencyKey(ctx)
-
-	l.Trace(key, "passed CancelMeeting service layer")
+	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed CancelMeeting service layer")
 
 	err := s.repo.CancelMeeting(ctx, parameter)
 	if err != nil {
@@ -88,10 +76,7 @@ func (s *service) CancelMeeting(ctx context.Context, parameter models.CancelMeet
 }
 
 func (s *service) GetAvailableTimeForMeeting(ctx context.Context, estateID string) ([]time.Time, error) {
-	l := wrappers.ExtractLogger(ctx)
-	key := wrappers.ExtractIdempotencyKey(ctx)
-
-	l.Trace(key, "passed GetAvailableTimeForMeeting service layer")
+	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed GetAvailableTimeForMeeting service layer")
 
 	tStamps, err := s.repo.GetMeetingTimestamps(ctx, estateID)
 	if err != nil {
