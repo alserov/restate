@@ -32,8 +32,8 @@ func MustStart(cfg *config.Config) {
 	lg.Info("initialized metrics", nil)
 
 	// services
-	estateGRPCClient := services.Dial[estate.EstateServiceClient]("", services.GRPCClient, grpcDial.NewEstateClient)
-	meetingsGRPCClient := services.Dial[meetings.MeetingsServiceClient]("", services.GRPCClient, grpcDial.NewMeetingsClient)
+	estateGRPCClient := services.Dial[estate.EstateServiceClient](cfg.Services.Estate, services.GRPCClient, grpcDial.NewEstateClient)
+	meetingsGRPCClient := services.Dial[meetings.MeetingsServiceClient](cfg.Services.Meetings, services.GRPCClient, grpcDial.NewMeetingsClient)
 	lg.Info("dialed services", nil)
 
 	// routes

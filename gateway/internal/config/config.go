@@ -10,7 +10,14 @@ type Config struct {
 	Addr string
 	DB   Postgres
 
+	Services Services
+
 	Broker Kafka
+}
+
+type Services struct {
+	Estate   string
+	Meetings string
 }
 
 type Kafka struct {
@@ -50,6 +57,10 @@ func MustLoad() *Config {
 
 	// Broker
 	cfg.Broker.Addr = os.Getenv("KAFKA_ADDR")
+
+	// Services
+	cfg.Services.Meetings = os.Getenv("MEETINGS_ADDR")
+	cfg.Services.Estate = os.Getenv("ESTATE_ADDR")
 
 	return &cfg
 }
