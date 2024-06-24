@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dir: [ estate, metrics,meetings ]
+        dir: [ estate, metrics, meetings ]
     steps:
       - name: setup
         uses: actions/setup-go@v2
@@ -34,7 +34,7 @@ jobs:
     needs: linter
     strategy:
       matrix:
-        dir: [ estate, metrics ]
+        dir: [ estate, metrics, meetings ]
     steps:
       - name: setup
         uses: actions/setup-go@v2

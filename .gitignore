@@ -1,2 +1,4 @@
 .idea
 makefile
+go.work
+.env
