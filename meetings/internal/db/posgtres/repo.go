@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/alserov/restate/meetings/internal/db"
-	"github.com/alserov/restate/meetings/internal/middleware/wrappers"
+	"github.com/alserov/restate/meetings/internal/middleware/grpc/wrappers"
 	"github.com/alserov/restate/meetings/internal/service/models"
 	"github.com/jackc/pgx/v5"
 	"time"

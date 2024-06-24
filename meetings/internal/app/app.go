@@ -9,6 +9,7 @@ import (
 	"github.com/alserov/restate/meetings/internal/metrics"
 	"github.com/alserov/restate/meetings/internal/server/grpc"
 	"github.com/alserov/restate/meetings/internal/service"
+	_ "github.com/joho/godotenv/autoload"
 	"net"
 	"os/signal"
 	"syscall"

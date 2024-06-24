@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/alserov/restate/meetings/internal/log"
 	"github.com/alserov/restate/meetings/internal/metrics"
-	"github.com/alserov/restate/meetings/internal/middleware"
-	"github.com/alserov/restate/meetings/internal/middleware/wrappers"
+	middleware "github.com/alserov/restate/meetings/internal/middleware/grpc"
+	"github.com/alserov/restate/meetings/internal/middleware/grpc/wrappers"
 	"github.com/alserov/restate/meetings/internal/service"
 	"github.com/alserov/restate/meetings/internal/utils"
 	meetings "github.com/alserov/restate/meetings/pkg/grpc"
@@ -15,12 +15,14 @@ import (
 
 func RegisterHandler(srvc service.Service, m metrics.Metrics, l log.Logger) *grpc.Server {
 	srvr := grpc.NewServer(
-		middleware.WithWrappers(
-			wrappers.WithLogger,
-			wrappers.WithIdempotencyKey,
+		middleware.ChainUnaryServer(
+			middleware.WithWrappers(
+				wrappers.WithLogger,
+				wrappers.WithIdempotencyKey,
+			),
+			middleware.WithRequestObserver(m),
+			middleware.WithErrorHandler(),
 		),
-		middleware.WithRequestObserver(m),
-		middleware.WithErrorHandler(),
 	)
 	meetings.RegisterMeetingsServiceServer(srvr, &handler{srvc: srvc, logger: l, metr: m})
 	return srvr
