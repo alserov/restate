@@ -3,7 +3,7 @@ package posgtres
 import (
 	"context"
 	"github.com/alserov/restate/estate/internal/db"
-	"github.com/alserov/restate/estate/internal/middleware/wrappers"
+	"github.com/alserov/restate/estate/internal/middleware/grpc/wrappers"
 	"github.com/alserov/restate/estate/internal/service/models"
 	"github.com/alserov/restate/estate/internal/utils"
 	"github.com/jackc/pgx/v5"

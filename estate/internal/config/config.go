@@ -48,5 +48,9 @@ func MustLoad() *Config {
 		Host:     os.Getenv("DB_HOST"),
 	}
 
+	// Broker
+
+	cfg.Broker.Addr = os.Getenv("BROKER_ADDR")
+
 	return &cfg
 }

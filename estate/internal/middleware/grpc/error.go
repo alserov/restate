@@ -1,4 +1,4 @@
-package middleware
+package grpc
 
 import (
 	"context"
@@ -7,8 +7,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func WithErrorHandler() grpc.ServerOption {
-	return grpc.UnaryInterceptor(func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
+func WithErrorHandler() grpc.UnaryServerInterceptor {
+	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
 		res, err := handler(ctx, req)
 		if err != nil {
 			msg, st := utils.FromError(err)
@@ -16,5 +16,5 @@ func WithErrorHandler() grpc.ServerOption {
 		}
 
 		return res, nil
-	})
+	}
 }

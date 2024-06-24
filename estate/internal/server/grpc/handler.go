@@ -3,8 +3,8 @@ package grpc
 import (
 	"context"
 	"github.com/alserov/restate/estate/internal/metrics"
-	"github.com/alserov/restate/estate/internal/middleware"
-	"github.com/alserov/restate/estate/internal/middleware/wrappers"
+	middleware "github.com/alserov/restate/estate/internal/middleware/grpc"
+	"github.com/alserov/restate/estate/internal/middleware/grpc/wrappers"
 	"github.com/alserov/restate/estate/internal/service"
 	"github.com/alserov/restate/estate/internal/utils"
 	estate "github.com/alserov/restate/estate/pkg/grpc"
@@ -14,9 +14,11 @@ import (
 
 func RegisterHandler(srvc service.Service, metr metrics.Metrics) *grpc.Server {
 	srvr := grpc.NewServer(
-		middleware.WithWrappers(wrappers.WithLogger, wrappers.WithIdempotencyKey),
-		middleware.WithRequestObserver(metr),
-		middleware.WithErrorHandler(),
+		middleware.ChainUnaryServer(
+			middleware.WithWrappers(wrappers.WithLogger, wrappers.WithIdempotencyKey),
+			middleware.WithRequestObserver(metr),
+			middleware.WithErrorHandler(),
+		),
 	)
 	estate.RegisterEstateServiceServer(srvr, &handler{srvc: srvc, metr: metr})
 	return srvr
