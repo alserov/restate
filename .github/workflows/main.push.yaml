@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dir: [ estate, metrics ]
+        dir: [ estate, metrics, gateway, meetings ]
     steps:
       - name: setup
         uses: actions/setup-go@v2
