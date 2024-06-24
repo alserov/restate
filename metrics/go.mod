@@ -5,7 +5,6 @@ go 1.22.0
 require (
 	github.com/IBM/sarama v1.43.2
 	github.com/google/uuid v1.6.0
-	github.com/joho/godotenv v1.5.1
 	github.com/prometheus/client_golang v1.19.1
 	go.uber.org/zap v1.27.0
 )

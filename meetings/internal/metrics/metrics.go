@@ -2,23 +2,36 @@ package metrics
 
 import (
 	"context"
+	"github.com/alserov/restate/meetings/internal/async"
 	"time"
 )
 
 type Metrics interface {
-	TimePerRequest(ctx context.Context, duration time.Duration, handlerName string)
+	ObserveRequest(ctx context.Context, status int, dur time.Duration, key string) error
 }
 
-var _ Metrics = &metrics{}
-
-func NewMetrics() *metrics {
-	return &metrics{}
+func NewMetrics(p async.Producer) *metrics {
+	return &metrics{p}
 }
 
 type metrics struct {
+	async.Producer
 }
 
-func (m *metrics) TimePerRequest(ctx context.Context, duration time.Duration, handlerName string) {
-	//TODO implement me
-	panic("implement me")
+type (
+	TimePerRequestData struct {
+		Key  string        `json:"reqName"`
+		Time time.Duration `json:"time"`
+	}
+
+	RequestStatusData struct {
+		Key    string `json:"reqName"`
+		Status int    `json:"status"`
+	}
+)
+
+func (m *metrics) ObserveRequest(ctx context.Context, status int, dur time.Duration, key string) error {
+	m.Producer.Produce(ctx, TimePerRequestData{Key: key, Time: dur})
+	m.Producer.Produce(ctx, RequestStatusData{Key: key, Status: status})
+	return nil
 }

@@ -6,12 +6,12 @@ type Worker interface {
 	Run(ctx context.Context)
 }
 
-func NewWorker(t WorkerType, brokerAddr string) Worker {
+func NewWorker(t WorkerType) Worker {
 	switch t {
 	case Business:
 		return nil
 	case System:
-		return NewSystemWorker(brokerAddr)
+		return NewSystemWorker()
 	default:
 		panic("invalid worker type")
 	}

@@ -5,14 +5,11 @@ import (
 	"github.com/alserov/restate/estate/internal/config"
 	"github.com/alserov/restate/estate/internal/db/posgtres"
 	"github.com/alserov/restate/estate/internal/log"
-	"github.com/alserov/restate/estate/internal/metrics"
 	"github.com/alserov/restate/estate/internal/server/grpc"
 	"github.com/alserov/restate/estate/internal/service"
 	"net"
 	"os/signal"
 	"syscall"
-
-	_ "github.com/joho/godotenv/autoload"
 )
 
 func MustStart(cfg *config.Config) {
@@ -21,10 +18,9 @@ func MustStart(cfg *config.Config) {
 	db, closeConn := posgtres.MustConnect(cfg.DB.Dsn())
 	defer closeConn()
 
-	metr := metrics.NewMetrics(cfg.Broker.Addr)
 	repo := posgtres.NewRepository(db)
 	srvc := service.NewService(repo)
-	srvr := grpc.RegisterHandler(srvc, metr, lg)
+	srvr := grpc.RegisterHandler(srvc)
 
 	run(func() {
 		l, err := net.Listen("tcp", cfg.Addr)

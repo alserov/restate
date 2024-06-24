@@ -8,16 +8,15 @@ import (
 	"github.com/alserov/restate/metrics/internal/log"
 	"github.com/alserov/restate/metrics/pkg/models"
 	"github.com/prometheus/client_golang/prometheus"
+	"os"
 	"strconv"
 	"time"
 )
 
 var _ Worker = &system{}
 
-func NewSystemWorker(addr string) *system {
-	cfg := sarama.NewConfig()
-
-	consumer, err := sarama.NewConsumer([]string{addr}, cfg)
+func NewSystemWorker() *system {
+	consumer, err := sarama.NewConsumer([]string{os.Getenv("KAFKA_ADDR")}, sarama.NewConfig())
 	if err != nil {
 		panic("failed to init consumer: " + err.Error())
 	}
@@ -47,7 +46,7 @@ type (
 
 	RequestStatusData struct {
 		ReqName string `json:"reqName"`
-		Status  int    `json:"status"`
+		Status  uint   `json:"status"`
 	}
 )
 

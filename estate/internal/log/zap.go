@@ -1,29 +1,21 @@
 package log
 
-import (
-	"go.uber.org/zap"
-)
+import "go.uber.org/zap"
 
-var _ Logger = &zapLogger{}
-
-func NewZap(env string) *zapLogger {
+func NewZap(env string) *logger {
 	l, err := zap.NewProduction()
 	if err != nil {
-		panic("failed to init zapLogger: " + err.Error())
+		panic("failed to init logger: " + err.Error())
 	}
 
-	return &zapLogger{l.Sugar()}
+	return &logger{l.Sugar()}
 }
 
-type zapLogger struct {
+type logger struct {
 	*zap.SugaredLogger
 }
 
-func (l zapLogger) Trace(key string, msg string) {
-	l.Infow(msg, "key", key)
-}
-
-func (l zapLogger) Debug(s string, data *Data) {
+func (l logger) Debug(s string, data *Data) {
 	if data == nil {
 		l.Debugw(s)
 	} else {
@@ -31,7 +23,7 @@ func (l zapLogger) Debug(s string, data *Data) {
 	}
 }
 
-func (l zapLogger) Info(s string, data *Data) {
+func (l logger) Info(s string, data *Data) {
 	if data == nil {
 		l.Infow(s)
 	} else {
@@ -39,7 +31,7 @@ func (l zapLogger) Info(s string, data *Data) {
 	}
 }
 
-func (l zapLogger) Warn(s string, data *Data) {
+func (l logger) Warn(s string, data *Data) {
 	if data == nil {
 		l.Warnw(s)
 	} else {
@@ -47,7 +39,7 @@ func (l zapLogger) Warn(s string, data *Data) {
 	}
 }
 
-func (l zapLogger) Error(s string, data *Data) {
+func (l logger) Error(s string, data *Data) {
 	if data == nil {
 		l.Errorw(s)
 	} else {

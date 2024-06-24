@@ -7,8 +7,6 @@ import (
 	"github.com/alserov/restate/metrics/internal/workers"
 	"os/signal"
 	"syscall"
-
-	_ "github.com/joho/godotenv/autoload"
 )
 
 func MustStart(cfg *config.Config) {
@@ -18,8 +16,7 @@ func MustStart(cfg *config.Config) {
 	defer cancel()
 
 	run(func() {
-		lg.Info("starting server", nil)
-		go workers.NewWorker(workers.System, cfg.Broker.Addr).Run(log.WithLogger(ctx, lg))
+		go workers.NewWorker(workers.System).Run(log.WithLogger(ctx, lg))
 	})
 
 	lg.Info("shutdown server", nil)

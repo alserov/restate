@@ -6,8 +6,5 @@ type GetEstateListParameters struct {
 	Square   float32 `json:"square"`
 	Country  string  `json:"country"`
 	City     string  `json:"city"`
-	Floor    int32   `json:"floor"`
-
-	Limit  uint32
-	Offset uint32
+	Floor    string  `json:"floor"`
 }
