@@ -31,9 +31,9 @@ func FromError(in error) (string, codes.Code) {
 	case NotFound:
 		return e.msg, codes.NotFound
 	case Internal:
-		return in.Error(), codes.Internal
+		return "internal error", codes.Internal
 	default:
-		return fmt.Sprintf("unknown status: %v", in), codes.Internal
+		return "internal error", codes.Internal
 	}
 }
 

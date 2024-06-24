@@ -2,32 +2,23 @@ package metrics
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"github.com/IBM/sarama"
-	"github.com/alserov/restate/estate/internal/utils"
 	"time"
+)
+
+import (
+	"github.com/alserov/restate/estate/internal/async"
 )
 
 type Metrics interface {
 	ObserveRequest(ctx context.Context, status int, dur time.Duration, name string) error
 }
 
-var _ Metrics = &metrics{}
-
-func NewMetrics(addr string) *metrics {
-	cfg := sarama.NewConfig()
-
-	prod, err := sarama.NewAsyncProducer([]string{addr}, cfg)
-	if err != nil {
-		panic("failed to init metrics: " + err.Error())
-	}
-
-	return &metrics{p: prod}
+func NewMetrics(p async.Producer) *metrics {
+	return &metrics{p}
 }
 
 type metrics struct {
-	p sarama.AsyncProducer
+	async.Producer
 }
 
 type (
@@ -42,33 +33,8 @@ type (
 	}
 )
 
-// ObserveRequest sends kafka message to broker, observes TimePerRequest and RequestStatus metrics
-func (m metrics) ObserveRequest(ctx context.Context, status int, dur time.Duration, name string) error {
-	timePerReq := TimePerRequestData{
-		ReqName: name,
-		Time:    dur,
-	}
-
-	b, err := json.Marshal(timePerReq)
-	if err != nil {
-		return utils.NewError(fmt.Sprintf("failed to marshal data: %v", err), utils.Internal)
-	}
-
-	m.p.Input() <- &sarama.ProducerMessage{Value: sarama.StringEncoder(b)}
-
-	// ====================
-
-	statusReq := RequestStatusData{
-		ReqName: name,
-		Status:  status,
-	}
-
-	b, err = json.Marshal(statusReq)
-	if err != nil {
-		return utils.NewError(fmt.Sprintf("failed to marshal data: %v", err), utils.Internal)
-	}
-
-	m.p.Input() <- &sarama.ProducerMessage{Value: sarama.StringEncoder(b)}
-
+func (m *metrics) ObserveRequest(ctx context.Context, status int, dur time.Duration, name string) error {
+	m.Producer.Produce(ctx, TimePerRequestData{ReqName: name, Time: dur})
+	m.Producer.Produce(ctx, RequestStatusData{ReqName: name, Status: status})
 	return nil
 }
