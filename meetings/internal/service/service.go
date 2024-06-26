@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/alserov/restate/meetings/internal/db"
-	"github.com/alserov/restate/meetings/internal/middleware/grpc/wrappers"
 	"github.com/alserov/restate/meetings/internal/service/models"
+	"github.com/alserov/restate/meetings/internal/utils"
 	"github.com/google/uuid"
 	"time"
 )
@@ -30,7 +30,7 @@ type service struct {
 }
 
 func (s *service) GetMeetingsByEstateID(ctx context.Context, estateID string) ([]models.Meeting, error) {
-	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed GetMeetingsByEstateID service layer")
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed GetMeetingsByEstateID service layer")
 
 	mtngs, err := s.repo.GetMeetingsByEstateID(ctx, estateID)
 	if err != nil {
@@ -41,7 +41,7 @@ func (s *service) GetMeetingsByEstateID(ctx context.Context, estateID string) ([
 }
 
 func (s *service) GetMeetingsByPhoneNumber(ctx context.Context, phoneNumber string) ([]models.Meeting, error) {
-	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed GetMeetingsByPhoneNumber service layer")
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed GetMeetingsByPhoneNumber service layer")
 
 	mtngs, err := s.repo.GetMeetingsByPhoneNumber(ctx, phoneNumber)
 	if err != nil {
@@ -52,7 +52,7 @@ func (s *service) GetMeetingsByPhoneNumber(ctx context.Context, phoneNumber stri
 }
 
 func (s *service) ArrangeMeeting(ctx context.Context, m models.Meeting) error {
-	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed ArrangeMeeting service layer")
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed ArrangeMeeting service layer")
 
 	m.ID = uuid.NewString()
 
@@ -65,7 +65,7 @@ func (s *service) ArrangeMeeting(ctx context.Context, m models.Meeting) error {
 }
 
 func (s *service) CancelMeeting(ctx context.Context, parameter models.CancelMeetingParameter) error {
-	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed CancelMeeting service layer")
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed CancelMeeting service layer")
 
 	err := s.repo.CancelMeeting(ctx, parameter)
 	if err != nil {
@@ -76,7 +76,7 @@ func (s *service) CancelMeeting(ctx context.Context, parameter models.CancelMeet
 }
 
 func (s *service) GetAvailableTimeForMeeting(ctx context.Context, estateID string) ([]time.Time, error) {
-	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed GetAvailableTimeForMeeting service layer")
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed GetAvailableTimeForMeeting service layer")
 
 	tStamps, err := s.repo.GetMeetingTimestamps(ctx, estateID)
 	if err != nil {
