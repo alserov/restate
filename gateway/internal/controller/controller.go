@@ -9,6 +9,7 @@ import (
 	"github.com/alserov/restate/gateway/internal/middleware/wrappers"
 	meetings "github.com/alserov/restate/meetings/pkg/grpc"
 	"github.com/labstack/echo/v4"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 type Controller interface {
@@ -42,15 +43,20 @@ type controller struct {
 
 func (c *controller) SetupRoutes() {
 	v1 := c.app.Group("/v1",
-		wrappers.WithLogger(c.lg),
+		// wrap request context
 		wrappers.WithIdempotencyKey,
+		wrappers.WithLogger(c.lg),
+
 		middleware.WithRequestObserver(c.metr),
-		middleware.WithErrorHandler)
+		middleware.WithErrorHandler,
+	)
 
 	estate := v1.Group("/estate")
 	meetings := v1.Group("/meetings")
 
 	// GET
+	c.app.GET("/swagger/*", echoSwagger.EchoWrapHandler())
+
 	estate.GET("/list", c.EstateHandler.GetList)
 	estate.GET("/info/:id", c.EstateHandler.GetInfo)
 

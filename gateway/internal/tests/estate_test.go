@@ -20,7 +20,7 @@ func TestEstate(t *testing.T) {
 	s := EstateSuite{srvr: echo.New()}
 
 	go func() {
-		require.NoError(t, s.srvr.Start(":3001"))
+		require.NoError(t, s.srvr.Start(":30000"))
 	}()
 
 	suite.Run(t, &s)
@@ -70,7 +70,7 @@ func (es *EstateSuite) TestGetList() {
 	handler := controller.NewEstateHandler(clientMock, nil, mocks.NewMockLogger(es.ctrl))
 	es.srvr.GET("/v1/estate/list", handler.GetList)
 
-	url := fmt.Sprintf("http://localhost:3001/v1/estate/list?country=%s&city=%s", country, city)
+	url := fmt.Sprintf("http://localhost:30000/v1/estate/list?country=%s&city=%s", country, city)
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	es.Require().NoError(err)
 
@@ -119,7 +119,7 @@ func (es *EstateSuite) TestGetInfo() {
 	handler := controller.NewEstateHandler(clientMock, nil, mocks.NewMockLogger(es.ctrl))
 	es.srvr.GET("/v1/estate/info/:id", handler.GetInfo)
 
-	url := fmt.Sprintf("http://localhost:3001/v1/estate/info/%s", id)
+	url := fmt.Sprintf("http://localhost:30000/v1/estate/info/%s", id)
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	es.Require().NoError(err)
 

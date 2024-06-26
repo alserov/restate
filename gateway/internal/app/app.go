@@ -17,6 +17,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	_ "github.com/alserov/restate/gateway/docs"
 	_ "github.com/joho/godotenv/autoload"
 )
 

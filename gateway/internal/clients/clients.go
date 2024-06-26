@@ -16,7 +16,7 @@ type EstateClient interface {
 }
 
 func NewEstateClient(cl estate.EstateServiceClient) EstateClient {
-	return &estateClient{}
+	return &estateClient{cl: cl}
 }
 
 type estateClient struct {

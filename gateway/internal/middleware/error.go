@@ -9,10 +9,9 @@ import (
 func WithErrorHandler(fn echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		err := fn(c)
-		lg := wrappers.ExtractLogger(c.Request().Context())
 
 		if err != nil {
-			msg, st := utils.FromError(lg, err)
+			msg, st := utils.FromError(wrappers.ExtractLogger(wrappers.Ctx(c)), err)
 			_ = c.JSON(st, map[string]string{
 				"error": msg,
 			})

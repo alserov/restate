@@ -8,10 +8,13 @@ type (
 		Country  string
 		City     string
 		Floor    int32
+
+		Limit  int
+		Offset int
 	}
 
 	Estate struct {
-		Id          *string
+		Id          *string `swaggeringore:"true"`
 		Title       string
 		Description string
 		Price       float32
