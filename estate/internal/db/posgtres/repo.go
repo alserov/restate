@@ -3,7 +3,6 @@ package posgtres
 import (
 	"context"
 	"github.com/alserov/restate/estate/internal/db"
-	"github.com/alserov/restate/estate/internal/middleware/grpc/wrappers"
 	"github.com/alserov/restate/estate/internal/service/models"
 	"github.com/alserov/restate/estate/internal/utils"
 	"github.com/jackc/pgx/v5"
@@ -54,7 +53,7 @@ func (r *repo) GetEstateList(ctx context.Context, param models.GetEstateListPara
 		infos = append(infos, info)
 	}
 
-	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed GetEstateList repo layer")
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed GetEstateList repo layer")
 
 	return infos, nil
 }
@@ -67,7 +66,7 @@ func (r *repo) GetEstateInfo(ctx context.Context, estateID string) (models.Estat
 		return models.Estate{}, utils.NewError(err.Error(), utils.Internal)
 	}
 
-	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed GetEstateInfo repo layer")
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed GetEstateInfo repo layer")
 
 	return estate, nil
 }
@@ -102,7 +101,7 @@ func (r *repo) CreateEstate(ctx context.Context, estate models.Estate) error {
 		return utils.NewError(err.Error(), utils.Internal)
 	}
 
-	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed CreateEstate repo layer")
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed CreateEstate repo layer")
 
 	return nil
 }
@@ -115,7 +114,7 @@ func (r *repo) DeleteEstate(ctx context.Context, estateID string) error {
 		return utils.NewError(err.Error(), utils.Internal)
 	}
 
-	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed DeleteEstate repo layer")
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed DeleteEstate repo layer")
 
 	return nil
 }

@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/alserov/restate/estate/internal/db"
-	"github.com/alserov/restate/estate/internal/middleware/grpc/wrappers"
 	"github.com/alserov/restate/estate/internal/service/models"
+	"github.com/alserov/restate/estate/internal/utils"
 	"github.com/google/uuid"
 )
 
@@ -28,7 +28,7 @@ type service struct {
 }
 
 func (s *service) GetEstateInfo(ctx context.Context, estateID string) (models.Estate, error) {
-	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed GetEstateInfo service layer")
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed GetEstateInfo service layer")
 
 	estate, err := s.repo.GetEstateInfo(ctx, estateID)
 	if err != nil {
@@ -41,7 +41,7 @@ func (s *service) GetEstateInfo(ctx context.Context, estateID string) (models.Es
 func (s *service) CreateEstate(ctx context.Context, estate models.Estate) error {
 	estate.ID = uuid.NewString()
 
-	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed CreateEstate service layer")
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed CreateEstate service layer")
 
 	err := s.repo.CreateEstate(ctx, estate)
 	if err != nil {
@@ -52,7 +52,7 @@ func (s *service) CreateEstate(ctx context.Context, estate models.Estate) error 
 }
 
 func (s *service) DeleteEstate(ctx context.Context, estateID string) error {
-	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed DeleteEstate service layer")
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed DeleteEstate service layer")
 
 	err := s.repo.DeleteEstate(ctx, estateID)
 	if err != nil {
@@ -63,7 +63,7 @@ func (s *service) DeleteEstate(ctx context.Context, estateID string) error {
 }
 
 func (s *service) GetEstateList(ctx context.Context, param models.GetEstateListParameters) ([]models.EstateMainInfo, error) {
-	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed GetEstateList service layer")
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed GetEstateList service layer")
 
 	list, err := s.repo.GetEstateList(ctx, param)
 	if err != nil {

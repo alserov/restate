@@ -5,7 +5,6 @@ import (
 	"github.com/alserov/restate/estate/internal/log"
 	"github.com/alserov/restate/estate/internal/metrics"
 	middleware "github.com/alserov/restate/estate/internal/middleware/grpc"
-	"github.com/alserov/restate/estate/internal/middleware/grpc/wrappers"
 	"github.com/alserov/restate/estate/internal/service"
 	"github.com/alserov/restate/estate/internal/utils"
 	estate "github.com/alserov/restate/estate/pkg/grpc"
@@ -16,7 +15,7 @@ import (
 func RegisterHandler(srvc service.Service, metr metrics.Metrics, l log.Logger) *grpc.Server {
 	srvr := grpc.NewServer(
 		middleware.ChainUnaryServer(
-			middleware.WithWrappers(wrappers.WithLogger(l), wrappers.WithIdempotencyKey),
+			middleware.WithWrappers(utils.WithLogger(l), utils.WithIdempotencyKey),
 			middleware.WithRequestObserver(metr),
 			middleware.WithErrorHandler(),
 		),
@@ -36,7 +35,7 @@ type handler struct {
 }
 
 func (h *handler) GetEstateList(ctx context.Context, parameters *estate.GetListParameters) (*estate.EstateList, error) {
-	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed GetEstateList server layer")
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed GetEstateList server layer")
 
 	list, err := h.srvc.GetEstateList(ctx, h.conv.ToGetEstateListParameters(parameters))
 	if err != nil {
@@ -47,7 +46,7 @@ func (h *handler) GetEstateList(ctx context.Context, parameters *estate.GetListP
 }
 
 func (h *handler) GetEstateInfo(ctx context.Context, parameter *estate.GetEstateInfoParameter) (*estate.Estate, error) {
-	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed GetEstateInfo server layer")
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed GetEstateInfo server layer")
 
 	info, err := h.srvc.GetEstateInfo(ctx, parameter.Id)
 	if err != nil {
@@ -58,7 +57,7 @@ func (h *handler) GetEstateInfo(ctx context.Context, parameter *estate.GetEstate
 }
 
 func (h *handler) CreateEstate(ctx context.Context, e *estate.Estate) (*emptypb.Empty, error) {
-	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed CreateEstate server layer")
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed CreateEstate server layer")
 
 	err := h.srvc.CreateEstate(ctx, h.conv.ToEstate(e))
 	if err != nil {
@@ -69,7 +68,7 @@ func (h *handler) CreateEstate(ctx context.Context, e *estate.Estate) (*emptypb.
 }
 
 func (h *handler) DeleteEstate(ctx context.Context, parameter *estate.DeleteEstateParameter) (*emptypb.Empty, error) {
-	wrappers.ExtractLogger(ctx).Trace(wrappers.ExtractIdempotencyKey(ctx), "passed DeleteEstate server layer")
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed DeleteEstate server layer")
 
 	err := h.srvc.DeleteEstate(ctx, parameter.Id)
 	if err != nil {

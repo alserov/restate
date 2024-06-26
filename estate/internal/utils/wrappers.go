@@ -1,16 +1,20 @@
-package wrappers
+package utils
 
 import (
 	"context"
 	"github.com/alserov/restate/estate/internal/log"
-	"github.com/alserov/restate/estate/internal/middleware/grpc"
 	"github.com/google/uuid"
 )
 
-func WithLogger(l log.Logger) grpc.Wrapper {
+type Wrapper func(ctx context.Context) context.Context
+
+func WithLogger(l log.Logger) Wrapper {
 	return func(ctx context.Context) context.Context {
 		return context.WithValue(ctx, ContextLogger, l)
 	}
+}
+func WithIdempotencyKey(ctx context.Context) context.Context {
+	return context.WithValue(ctx, ContextIdempotencyKey, uuid.NewString())
 }
 
 func ExtractLogger(ctx context.Context) log.Logger {
@@ -20,10 +24,6 @@ func ExtractLogger(ctx context.Context) log.Logger {
 	}
 
 	return l
-}
-
-func WithIdempotencyKey(ctx context.Context) context.Context {
-	return context.WithValue(ctx, ContextIdempotencyKey, uuid.NewString())
 }
 
 func ExtractIdempotencyKey(ctx context.Context) string {
