@@ -8,7 +8,7 @@ type Message struct {
 }
 
 const (
-	MetricsTopic = "metrics"
+	TopicMetrics = "metrics"
 
 	TimePerRequest MetricType = iota
 	RequestStatus

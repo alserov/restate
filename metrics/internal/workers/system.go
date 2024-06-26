@@ -4,23 +4,17 @@ package workers
 import (
 	"context"
 	"encoding/json"
-	"github.com/IBM/sarama"
+	"github.com/alserov/restate/metrics/internal/async"
 	"github.com/alserov/restate/metrics/internal/log"
 	"github.com/alserov/restate/metrics/pkg/models"
 	"github.com/prometheus/client_golang/prometheus"
-	"os"
 	"strconv"
 	"time"
 )
 
 var _ Worker = &system{}
 
-func NewSystemWorker() *system {
-	consumer, err := sarama.NewConsumer([]string{os.Getenv("KAFKA_ADDR")}, sarama.NewConfig())
-	if err != nil {
-		panic("failed to init consumer: " + err.Error())
-	}
-
+func NewSystemWorker(consumer async.Consumer) *system {
 	return &system{
 		consumer: consumer,
 	}
@@ -51,39 +45,31 @@ type (
 )
 
 type system struct {
-	consumer sarama.Consumer
+	consumer async.Consumer
 }
 
-func (s *system) Run(ctx context.Context) {
-	partitions, _ := s.consumer.Partitions(models.MetricsTopic)
-
-	pcons, err := s.consumer.ConsumePartition(models.MetricsTopic, partitions[0], sarama.OffsetNewest)
-	if nil != err {
-		panic("failed to consume: " + err.Error())
-	}
-
-	ch := pcons.Messages()
+func (s *system) Run(ctx context.Context, workersAmount int) {
 	l := log.FromCtx(ctx)
 
-	for i := 0; i < 5; i++ {
+	for i := 0; i < workersAmount; i++ {
 		go func() {
-			for msg := range ch {
+			for msg := range s.consumer.Consume(ctx) {
 				var m models.Message
-				if err = json.Unmarshal(msg.Value, &m); err != nil {
+				if err := json.Unmarshal(msg, &m); err != nil {
 					l.Error("failed to unmarshal", log.WithData("error", err.Error()))
 				}
 
 				switch m.Type {
 				case models.TimePerRequest:
 					var data TimePerRequestData
-					if err = json.Unmarshal(m.Data, &data); err != nil {
+					if err := json.Unmarshal(m.Data, &data); err != nil {
 						l.Error("failed to unmarshal", log.WithData("error", err.Error()))
 					}
 
 					timePerRequest.With(prometheus.Labels{"req_name": data.ReqName}).Observe(float64(data.Time.Milliseconds()))
 				case models.RequestStatus:
 					var data RequestStatusData
-					if err = json.Unmarshal(m.Data, &data); err != nil {
+					if err := json.Unmarshal(m.Data, &data); err != nil {
 						l.Error("failed to unmarshal", log.WithData("error", err.Error()))
 					}
 
@@ -93,10 +79,5 @@ func (s *system) Run(ctx context.Context) {
 				}
 			}
 		}()
-	}
-
-	select {
-	case <-ctx.Done():
-		s.consumer.Close()
 	}
 }
