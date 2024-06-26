@@ -5,7 +5,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-type Wrapper func(ctx context.Context, args ...any) context.Context
+type Wrapper func(ctx context.Context) context.Context
 
 // WithWrappers - middleware for grpc handlers, wraps request context with values
 func WithWrappers(wrs ...Wrapper) grpc.UnaryServerInterceptor {

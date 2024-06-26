@@ -24,7 +24,7 @@ func MustStart(cfg *config.Config) {
 	metr := metrics.NewMetrics(async.NewProducer(async.Kafka, cfg.Broker.Addr, cfg.Broker.Topics.Metrics))
 	repo := posgtres.NewRepository(db)
 	srvc := service.NewService(repo)
-	srvr := grpc.RegisterHandler(srvc, metr)
+	srvr := grpc.RegisterHandler(srvc, metr, lg)
 
 	run(func() {
 		l, err := net.Listen("tcp", cfg.Addr)

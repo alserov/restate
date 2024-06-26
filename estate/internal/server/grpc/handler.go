@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"github.com/alserov/restate/estate/internal/log"
 	"github.com/alserov/restate/estate/internal/metrics"
 	middleware "github.com/alserov/restate/estate/internal/middleware/grpc"
 	"github.com/alserov/restate/estate/internal/middleware/grpc/wrappers"
@@ -12,10 +13,10 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func RegisterHandler(srvc service.Service, metr metrics.Metrics) *grpc.Server {
+func RegisterHandler(srvc service.Service, metr metrics.Metrics, l log.Logger) *grpc.Server {
 	srvr := grpc.NewServer(
 		middleware.ChainUnaryServer(
-			middleware.WithWrappers(wrappers.WithLogger, wrappers.WithIdempotencyKey),
+			middleware.WithWrappers(wrappers.WithLogger(l), wrappers.WithIdempotencyKey),
 			middleware.WithRequestObserver(metr),
 			middleware.WithErrorHandler(),
 		),
