@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/alserov/restate/gateway/internal/controller"
+	"github.com/alserov/restate/gateway/internal/middleware/wrappers"
 	"github.com/alserov/restate/gateway/internal/models"
 	"github.com/alserov/restate/gateway/internal/tests/mocks"
 	"github.com/golang/mock/gomock"
@@ -67,8 +68,10 @@ func (es *EstateSuite) TestGetList() {
 			},
 		}, nil)
 
-	handler := controller.NewEstateHandler(clientMock, nil, mocks.NewMockLogger(es.ctrl))
-	es.srvr.GET("/v1/estate/list", handler.GetList)
+	loggerMock := mocks.NewMockLogger(es.ctrl)
+
+	handler := controller.NewEstateHandler(clientMock, nil, loggerMock)
+	es.srvr.GET("/v1/estate/list", handler.GetList, wrappers.WithLogger(loggerMock))
 
 	url := fmt.Sprintf("http://localhost:30000/v1/estate/list?country=%s&city=%s", country, city)
 	req, err := http.NewRequest(http.MethodGet, url, nil)
@@ -116,8 +119,10 @@ func (es *EstateSuite) TestGetInfo() {
 		Times(1).
 		Return(expect, nil)
 
-	handler := controller.NewEstateHandler(clientMock, nil, mocks.NewMockLogger(es.ctrl))
-	es.srvr.GET("/v1/estate/info/:id", handler.GetInfo)
+	loggerMock := mocks.NewMockLogger(es.ctrl)
+
+	handler := controller.NewEstateHandler(clientMock, nil, loggerMock)
+	es.srvr.GET("/v1/estate/info/:id", handler.GetInfo, wrappers.WithLogger(loggerMock))
 
 	url := fmt.Sprintf("http://localhost:30000/v1/estate/info/%s", id)
 	req, err := http.NewRequest(http.MethodGet, url, nil)
