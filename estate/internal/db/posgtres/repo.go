@@ -5,19 +5,19 @@ import (
 	"github.com/alserov/restate/estate/internal/db"
 	"github.com/alserov/restate/estate/internal/service/models"
 	"github.com/alserov/restate/estate/internal/utils"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 var _ db.Repository = &repo{}
 
-func NewRepository(conn *pgx.Conn) *repo {
+func NewRepository(conn *pgxpool.Conn) *repo {
 	return &repo{
 		conn,
 	}
 }
 
 type repo struct {
-	*pgx.Conn
+	*pgxpool.Conn
 }
 
 func (r *repo) GetEstateList(ctx context.Context, param models.GetEstateListParameters) ([]models.EstateMainInfo, error) {

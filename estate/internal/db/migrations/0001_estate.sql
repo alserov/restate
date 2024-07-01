@@ -1,3 +1,4 @@
+-- +goose Up
 CREATE TABLE IF NOT EXISTS estate
 (
     id          text PRIMARY KEY,
@@ -16,4 +17,4 @@ CREATE TABLE IF NOT EXISTS images
 (
     estate_id text,
     image     text
-)
+);
