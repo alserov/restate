@@ -1,30 +1,41 @@
 package posgtres
 
 import (
-	"context"
-	"github.com/jackc/pgx/v5"
-	"time"
+	"database/sql"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
+	"github.com/pressly/goose/v3"
 )
 
-func MustConnect(dsn string) (*pgx.Conn, func()) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
-	defer cancel()
-
-	conn, err := pgx.Connect(ctx, dsn)
+func MustConnect(dsn string) (*sqlx.DB, func()) {
+	conn, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
 		panic("failed to connect: " + err.Error())
 	}
 
-	if err = conn.Ping(ctx); err != nil {
+	if err = conn.Ping(); err != nil {
 		panic("failed to ping: " + err.Error())
 	}
 
-	//mustMigrate(conn)
+	mustMigrate(conn.DB)
 
 	return conn, func() {
-		ctx, cancel = context.WithTimeout(context.Background(), time.Second*3)
-		defer cancel()
+		if err = conn.Close(); err != nil {
+			panic("failed to close connection: " + err.Error())
+		}
+	}
+}
 
-		_ = conn.Close(ctx)
+const (
+	migrationsDir = "./internal/db/migrations"
+)
+
+func mustMigrate(conn *sql.DB) {
+	if err := goose.SetDialect("postgres"); err != nil {
+		panic("failed to set dialect: " + err.Error())
+	}
+
+	if err := goose.Up(conn, migrationsDir); err != nil {
+		panic(err)
 	}
 }

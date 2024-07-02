@@ -9,6 +9,7 @@ import (
 	"github.com/alserov/restate/meetings/internal/metrics"
 	"github.com/alserov/restate/meetings/internal/server/grpc"
 	"github.com/alserov/restate/meetings/internal/service"
+	_ "github.com/joho/godotenv/autoload"
 	"net"
 	"os/signal"
 	"syscall"
@@ -20,7 +21,7 @@ func MustStart(cfg *config.Config) {
 	db, closeConn := posgtres.MustConnect(cfg.DB.Dsn())
 	defer closeConn()
 
-	metr := metrics.NewMetrics(async.NewProducer(async.Kafka, cfg.Broker.Addr))
+	metr := metrics.NewMetrics(async.NewProducer(async.Kafka, cfg.Broker.Addr, cfg.Broker.Topics.Metrics))
 	repo := posgtres.NewRepository(db)
 	srvc := service.NewService(repo)
 	srvr := grpc.RegisterHandler(srvc, metr, lg)

@@ -2,63 +2,75 @@ package posgtres
 
 import (
 	"context"
-	"fmt"
+	"database/sql"
+	"errors"
 	"github.com/alserov/restate/meetings/internal/db"
 	"github.com/alserov/restate/meetings/internal/service/models"
-	"github.com/jackc/pgx/v5"
+	"github.com/alserov/restate/meetings/internal/utils"
+	"github.com/jmoiron/sqlx"
 	"time"
 )
 
 var _ db.Repository = &repo{}
 
-func NewRepository(conn *pgx.Conn) *repo {
+func NewRepository(conn *sqlx.DB) *repo {
 	return &repo{
 		conn,
 	}
 }
 
 type repo struct {
-	*pgx.Conn
+	*sqlx.DB
 }
 
 func (r *repo) GetMeetingsByEstateID(ctx context.Context, estateID string) ([]models.Meeting, error) {
-	q := `SELECT * FROM meetings WHERE timestamp > $1 AND estate_id = $2`
+	q := `SELECT * FROM meetings WHERE timestamp < $1 AND estate_id = $2`
 
-	rows, err := r.Query(ctx, q, time.Now(), time.Now(), estateID)
+	rows, err := r.Queryx(q, time.Now(), estateID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to select: %w", err)
+		if errors.Is(sql.ErrNoRows, err) {
+			return nil, utils.NewError(err.Error(), utils.NotFound)
+		}
+		return nil, utils.NewError(err.Error(), utils.Internal)
 	}
 
 	var meetings []models.Meeting
 	for rows.Next() {
 		var meeting models.Meeting
-		if err = rows.Scan(&meeting); err != nil {
-			return nil, fmt.Errorf("failed to scan: %w", err)
+		if err = rows.StructScan(&meeting); err != nil {
+			return nil, utils.NewError(err.Error(), utils.Internal)
 		}
 
 		meetings = append(meetings, meeting)
 	}
+
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed GetMeetingsByEstateID repo layer")
 
 	return meetings, nil
 }
 
 func (r *repo) GetMeetingsByPhoneNumber(ctx context.Context, phoneNumber string) ([]models.Meeting, error) {
-	q := `SELECT * FROM meetings WHERE timestamp > $1 AND visitor_phone = $2`
+	q := `SELECT * FROM meetings WHERE timestamp < $1 AND visitor_phone = $2`
 
-	rows, err := r.Query(ctx, q, time.Now(), time.Now(), phoneNumber)
+	rows, err := r.Queryx(q, time.Now(), phoneNumber)
 	if err != nil {
-		return nil, fmt.Errorf("failed to select: %w", err)
+		if errors.Is(sql.ErrNoRows, err) {
+			return nil, utils.NewError(err.Error(), utils.NotFound)
+		}
+		return nil, utils.NewError(err.Error(), utils.Internal)
 	}
 
 	var meetings []models.Meeting
 	for rows.Next() {
 		var meeting models.Meeting
-		if err = rows.Scan(&meeting); err != nil {
-			return nil, fmt.Errorf("failed to scan: %w", err)
+		if err = rows.StructScan(&meeting); err != nil {
+			return nil, utils.NewError(err.Error(), utils.Internal)
 		}
 
 		meetings = append(meetings, meeting)
 	}
+
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed GetMeetingsByPhoneNumber repo layer")
 
 	return meetings, nil
 }
@@ -66,10 +78,12 @@ func (r *repo) GetMeetingsByPhoneNumber(ctx context.Context, phoneNumber string)
 func (r *repo) ArrangeMeeting(ctx context.Context, m models.Meeting) error {
 	q := `INSERT INTO meetings (id,timestamp,estate_id,visitor_phone) VALUES ($1,$2,$3,$4)`
 
-	_, err := r.Exec(ctx, q, m.ID, m.Timestamp, m.EstateID, m.VisitorPhone)
+	_, err := r.Exec(q, m.ID, m.Timestamp, m.EstateID, m.VisitorPhone)
 	if err != nil {
-		return fmt.Errorf("failed to insert: %w", err)
+		return utils.NewError(err.Error(), utils.Internal)
 	}
+
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed ArrangeMeeting repo layer")
 
 	return nil
 }
@@ -77,10 +91,12 @@ func (r *repo) ArrangeMeeting(ctx context.Context, m models.Meeting) error {
 func (r *repo) CancelMeeting(ctx context.Context, parameter models.CancelMeetingParameter) error {
 	q := `DELETE FROM meetings WHERE id = $1 AND visitor_phone = $2`
 
-	_, err := r.Exec(ctx, q, parameter.ID, parameter.VisitorPhone)
+	_, err := r.Exec(q, parameter.ID, parameter.VisitorPhone)
 	if err != nil {
-		return fmt.Errorf("failed to delete: %w", err)
+		return utils.NewError(err.Error(), utils.Internal)
 	}
+
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed CancelMeeting repo layer")
 
 	return nil
 }
@@ -88,20 +104,25 @@ func (r *repo) CancelMeeting(ctx context.Context, parameter models.CancelMeeting
 func (r *repo) GetMeetingTimestamps(ctx context.Context, estateID string) ([]time.Time, error) {
 	q := `SELECT timestamp FROM meetings WHERE timestamp > $1 AND estate_id = $2 ORDER BY timestamp`
 
-	rows, err := r.Query(ctx, q, time.Now(), estateID)
+	rows, err := r.Queryx(q, time.Now(), estateID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to select: %w", err)
+		if errors.Is(sql.ErrNoRows, err) {
+			return nil, utils.NewError(err.Error(), utils.NotFound)
+		}
+		return nil, utils.NewError(err.Error(), utils.Internal)
 	}
 
 	var tStamps []time.Time
 	for rows.Next() {
 		var tStamp time.Time
-		if err = rows.Scan(&tStamp); err != nil {
-			return nil, fmt.Errorf("failed to scan: %w", err)
+		if err = rows.StructScan(&tStamp); err != nil {
+			return nil, utils.NewError(err.Error(), utils.Internal)
 		}
 
 		tStamps = append(tStamps, tStamp)
 	}
+
+	utils.ExtractLogger(ctx).Trace(utils.ExtractIdempotencyKey(ctx), "passed GetMeetingTimestamps repo layer")
 
 	return tStamps, nil
 }

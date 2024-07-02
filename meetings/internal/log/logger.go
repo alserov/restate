@@ -11,7 +11,7 @@ type Logger interface {
 	Error(s string, data *Data)
 	Debug(s string, data *Data)
 
-	Trace(ctx context.Context, msg string)
+	Trace(key string, msg string)
 }
 
 type Data struct {

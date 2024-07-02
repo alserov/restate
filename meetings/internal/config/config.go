@@ -14,7 +14,10 @@ type Config struct {
 }
 
 type Kafka struct {
-	Addr string
+	Addr   string
+	Topics struct {
+		Metrics string
+	}
 }
 
 type Postgres struct {
@@ -44,6 +47,7 @@ func MustLoad() *Config {
 		Port:     os.Getenv("DB_PORT"),
 		Host:     os.Getenv("DB_HOST"),
 	}
+	cfg.Broker.Addr = os.Getenv("KAFKA_ADDR")
 
 	// Broker
 	cfg.Broker.Addr = os.Getenv("KAFKA_ADDR")

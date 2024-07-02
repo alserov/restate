@@ -1,0 +1,17 @@
+version: 0.0.1
+name: meetings
+services:
+  postgres:
+    container_name: meetings_db
+    image: postgres
+    ports:
+      - 4001:5432
+    environment:
+      - POSTGRES_PASSWORD=1787
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=meetings
+    volumes:
+      - data:/var/data/lib/postgres/meetings
+
+volumes:
+  data:
