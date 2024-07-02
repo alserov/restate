@@ -128,22 +128,18 @@ paths:
       - description: floor
         in: path
         name: floor
-        required: true
         type: integer
       - description: square
         in: path
         name: square
-        required: true
         type: integer
       - description: min price
         in: path
         name: minPrice
-        required: true
         type: integer
       - description: max price
         in: path
         name: maxPrice
-        required: true
         type: integer
       produces:
       - application/json
