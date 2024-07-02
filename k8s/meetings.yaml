@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meetings-deployment
+  labels:
+    app: meetings
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: meetings
+  template:
+    metadata:
+      labels:
+        app: meetings
+    spec:
+      containers:
+        - name: meetings
+          image: "" #todo
+          env:
+            - name: KAFKA_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  key: kafka-url
+                  name: meetings-config

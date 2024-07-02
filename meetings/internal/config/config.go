@@ -49,5 +49,8 @@ func MustLoad() *Config {
 	}
 	cfg.Broker.Addr = os.Getenv("KAFKA_ADDR")
 
+	// Broker
+	cfg.Broker.Addr = os.Getenv("KAFKA_ADDR")
+
 	return &cfg
 }
