@@ -1,39 +1,26 @@
 package posgtres
 
 import (
-	"context"
 	"database/sql"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/jackc/pgx/v5/stdlib"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"github.com/pressly/goose/v3"
-	"time"
 )
 
-func MustConnect(dsn string) (*pgxpool.Conn, func()) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
-	defer cancel()
-
-	pool, err := pgxpool.New(ctx, dsn)
+func MustConnect(dsn string) (*sqlx.DB, func()) {
+	conn, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
-		panic("failed to create pool: " + err.Error())
+		panic("failed to connect: " + err.Error())
 	}
 
-	if err = pool.Ping(ctx); err != nil {
+	if err = conn.Ping(); err != nil {
 		panic("failed to ping: " + err.Error())
 	}
 
-	mustMigrate(stdlib.OpenDBFromPool(pool))
-
-	conn, err := pool.Acquire(ctx)
-	if err != nil {
-		panic("failed to acquire pool: " + err.Error())
-	}
+	mustMigrate(conn.DB)
 
 	return conn, func() {
-		ctx, cancel = context.WithTimeout(context.Background(), time.Second*3)
-		defer cancel()
-
-		if err = conn.Conn().Close(ctx); err != nil {
+		if err = conn.Close(); err != nil {
 			panic("failed to close connection: " + err.Error())
 		}
 	}
