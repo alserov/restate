@@ -154,7 +154,7 @@ func (eh *EstateHandler) CreateEstate(c echo.Context) error {
 // @Failure      400  {object}  string
 // @Failure      404  {object}  string
 // @Failure      500  {object}  string
-// @Router       /estate/delete [delete]
+// @Router       /estate/delete/{id} [delete]
 func (eh *EstateHandler) DeleteEstate(c echo.Context) error {
 	estateID := c.Param("id")
 

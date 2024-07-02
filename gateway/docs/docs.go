@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/estate/delete": {
+        "/estate/delete/{id}": {
             "delete": {
                 "consumes": [
                     "application/json"

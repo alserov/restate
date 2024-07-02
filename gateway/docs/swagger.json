@@ -8,7 +8,7 @@
     },
     "basePath": "/v1",
     "paths": {
-        "/estate/delete": {
+        "/estate/delete/{id}": {
             "delete": {
                 "consumes": [
                     "application/json"
