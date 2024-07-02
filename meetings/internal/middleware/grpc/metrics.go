@@ -3,7 +3,7 @@ package grpc
 import (
 	"context"
 	"github.com/alserov/restate/meetings/internal/metrics"
-	"github.com/alserov/restate/meetings/internal/middleware/grpc/wrappers"
+	"github.com/alserov/restate/meetings/internal/utils"
 	"google.golang.org/grpc"
 	"net/http"
 	"time"
@@ -15,7 +15,7 @@ func WithRequestObserver(metr metrics.Metrics) grpc.UnaryServerInterceptor {
 
 		res, err := handler(ctx, req)
 
-		_ = metr.ObserveRequest(ctx, http.StatusOK, time.Since(start), wrappers.ExtractIdempotencyKey(ctx))
+		_ = metr.ObserveRequest(ctx, http.StatusOK, time.Since(start), utils.ExtractIdempotencyKey(ctx))
 
 		return res, err
 	}

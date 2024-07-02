@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/alserov/restate/meetings/internal/utils"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
@@ -12,6 +13,9 @@ func WithErrorHandler() grpc.UnaryServerInterceptor {
 		res, err := handler(ctx, req)
 		if err != nil {
 			msg, st := utils.FromError(err)
+			if st == codes.Internal {
+				utils.ExtractLogger(ctx).Error(err.Error(), nil)
+			}
 			return nil, status.Error(st, msg)
 		}
 
