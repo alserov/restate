@@ -72,6 +72,5 @@ func (c *controller) SetupRoutes() {
 	estate.DELETE("/delete/:id", c.EstateHandler.DeleteEstate)
 
 	// PUT
-
 	meetings.PUT("/cancel", c.MeetingsHandler.CancelMeeting)
 }

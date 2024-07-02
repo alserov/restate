@@ -121,12 +121,12 @@ paths:
         in: query
         name: country
         type: string
-      - description: city
+      - description: limit
         in: query
         name: limit
         required: true
         type: integer
-      - description: city
+      - description: offset
         in: query
         name: offset
         required: true

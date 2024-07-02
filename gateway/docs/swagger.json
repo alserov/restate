@@ -127,14 +127,14 @@
                     },
                     {
                         "type": "integer",
-                        "description": "city",
+                        "description": "limit",
                         "name": "limit",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "city",
+                        "description": "offset",
                         "name": "offset",
                         "in": "query",
                         "required": true
