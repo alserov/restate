@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/alserov/restate/meetings/internal/mocks"
 	"github.com/alserov/restate/meetings/internal/service/models"
+	"github.com/alserov/restate/meetings/internal/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -31,7 +32,6 @@ func (s *ServiceTestSuite) TeardownTest() {
 }
 
 func (s *ServiceTestSuite) TestGetMeetingsByEstateID() {
-	repo := mocks.NewMockRepository(s.ctrl)
 	id := "id"
 	expectedMtngs := []models.Meeting{
 		{
@@ -42,20 +42,24 @@ func (s *ServiceTestSuite) TestGetMeetingsByEstateID() {
 		},
 	}
 
+	repo := mocks.NewMockRepository(s.ctrl)
 	repo.EXPECT().
 		GetMeetingsByEstateID(gomock.Any(), gomock.Eq(id)).
 		Return(expectedMtngs, nil).
 		Times(1)
 
-	srvc := NewService(repo)
+	l := mocks.NewMockLogger(s.ctrl)
+	l.EXPECT().
+		Trace(gomock.Any(), gomock.Any()).AnyTimes()
 
-	mtngs, err := srvc.GetMeetingsByEstateID(context.Background(), id)
+	ctx := utils.WithLogger(l)(utils.WithIdempotencyKey(context.Background()))
+
+	mtngs, err := NewService(repo).GetMeetingsByEstateID(ctx, id)
 	s.Require().Nil(err)
 	s.Require().Equal(expectedMtngs, mtngs)
 }
 
 func (s *ServiceTestSuite) TestGetMeetingsByPhoneNumber() {
-	repo := mocks.NewMockRepository(s.ctrl)
 	phoneNumber := "1"
 	expectedMtngs := []models.Meeting{
 		{
@@ -66,20 +70,24 @@ func (s *ServiceTestSuite) TestGetMeetingsByPhoneNumber() {
 		},
 	}
 
+	repo := mocks.NewMockRepository(s.ctrl)
 	repo.EXPECT().
 		GetMeetingsByPhoneNumber(gomock.Any(), gomock.Eq(phoneNumber)).
 		Return(expectedMtngs, nil).
 		Times(1)
 
-	srvc := NewService(repo)
+	l := mocks.NewMockLogger(s.ctrl)
+	l.EXPECT().
+		Trace(gomock.Any(), gomock.Any()).AnyTimes()
 
-	mtngs, err := srvc.GetMeetingsByPhoneNumber(context.Background(), phoneNumber)
+	ctx := utils.WithLogger(l)(utils.WithIdempotencyKey(context.Background()))
+
+	mtngs, err := NewService(repo).GetMeetingsByPhoneNumber(ctx, phoneNumber)
 	s.Require().Nil(err)
 	s.Require().Equal(expectedMtngs, mtngs)
 }
 
 func (s *ServiceTestSuite) TestArrangeMeeting() {
-	repo := mocks.NewMockRepository(s.ctrl)
 	mtng := models.Meeting{
 		ID:           "id",
 		Timestamp:    time.Now(),
@@ -87,39 +95,48 @@ func (s *ServiceTestSuite) TestArrangeMeeting() {
 		VisitorPhone: "1",
 	}
 
+	repo := mocks.NewMockRepository(s.ctrl)
 	repo.EXPECT().
 		ArrangeMeeting(gomock.Any(), gomock.Any()).
 		Return(nil).
 		Times(1)
 
-	srvc := NewService(repo)
+	l := mocks.NewMockLogger(s.ctrl)
+	l.EXPECT().
+		Trace(gomock.Any(), gomock.Any()).AnyTimes()
 
-	err := srvc.ArrangeMeeting(context.Background(), mtng)
+	ctx := utils.WithLogger(l)(utils.WithIdempotencyKey(context.Background()))
+
+	err := NewService(repo).ArrangeMeeting(ctx, mtng)
 	s.Require().Nil(err)
 }
 
 func (s *ServiceTestSuite) TestCancelMeeting() {
-	repo := mocks.NewMockRepository(s.ctrl)
 	param := models.CancelMeetingParameter{
 		ID:           "id",
 		VisitorPhone: "1",
 	}
 
+	repo := mocks.NewMockRepository(s.ctrl)
 	repo.EXPECT().
 		CancelMeeting(gomock.Any(), gomock.Eq(param)).
 		Return(nil).
 		Times(1)
 
-	srvc := NewService(repo)
+	l := mocks.NewMockLogger(s.ctrl)
+	l.EXPECT().
+		Trace(gomock.Any(), gomock.Any()).AnyTimes()
 
-	err := srvc.CancelMeeting(context.Background(), param)
+	ctx := utils.WithLogger(l)(utils.WithIdempotencyKey(context.Background()))
+
+	err := NewService(repo).CancelMeeting(ctx, param)
 	s.Require().Nil(err)
 }
 
 func (s *ServiceTestSuite) TestGetAvailableTimeForMeeting() {
-	repo := mocks.NewMockRepository(s.ctrl)
 	estateID := "id"
 
+	repo := mocks.NewMockRepository(s.ctrl)
 	repo.EXPECT().
 		GetMeetingTimestamps(gomock.Any(), gomock.Eq(estateID)).
 		Return([]time.Time{
@@ -130,9 +147,13 @@ func (s *ServiceTestSuite) TestGetAvailableTimeForMeeting() {
 		}, nil).
 		Times(1)
 
-	srvc := NewService(repo)
+	l := mocks.NewMockLogger(s.ctrl)
+	l.EXPECT().
+		Trace(gomock.Any(), gomock.Any()).AnyTimes()
 
-	tStamps, err := srvc.GetAvailableTimeForMeeting(context.Background(), estateID)
+	ctx := utils.WithLogger(l)(utils.WithIdempotencyKey(context.Background()))
+
+	tStamps, err := NewService(repo).GetAvailableTimeForMeeting(ctx, estateID)
 	s.Require().Nil(err)
 	s.Require().NotNil(tStamps)
 }
