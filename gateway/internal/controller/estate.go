@@ -51,6 +51,16 @@ func (eh *EstateHandler) GetList(c echo.Context) error {
 		City:    c.QueryParam("city"),
 	}
 
+	limit, err := strconv.Atoi(c.QueryParam("limit"))
+	if err == nil {
+		param.Limit = limit
+	}
+
+	offset, err := strconv.Atoi(c.QueryParam("offset"))
+	if err == nil {
+		param.Offset = offset
+	}
+
 	floor, err := strconv.Atoi(c.QueryParam("floor"))
 	if err == nil {
 		param.Floor = int32(floor)
