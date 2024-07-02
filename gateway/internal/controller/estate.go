@@ -36,10 +36,10 @@ func NewEstateHandler(cl clients.EstateClient, metr metrics.Metrics, logger log.
 // @Produce      json
 // @Param        country   query      string  false  "country"
 // @Param        city   query      string  false  "city"
-// @Param        floor   path      int  true  "floor"
-// @Param        square   path      int  true  "square"
-// @Param        minPrice   path      int  true  "min price"
-// @Param        maxPrice   path      int  true  "max price"
+// @Param        floor   path      int  false  "floor"
+// @Param        square   path      int  false  "square"
+// @Param        minPrice   path      int  false  "min price"
+// @Param        maxPrice   path      int  false  "max price"
 // @Success      200  {array}   models.EstateInfo
 // @Failure      400  {object}  string
 // @Failure      404  {object}  string

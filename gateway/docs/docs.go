@@ -142,29 +142,25 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "floor",
                         "name": "floor",
-                        "in": "path",
-                        "required": true
+                        "in": "path"
                     },
                     {
                         "type": "integer",
                         "description": "square",
                         "name": "square",
-                        "in": "path",
-                        "required": true
+                        "in": "path"
                     },
                     {
                         "type": "integer",
                         "description": "min price",
                         "name": "minPrice",
-                        "in": "path",
-                        "required": true
+                        "in": "path"
                     },
                     {
                         "type": "integer",
                         "description": "max price",
                         "name": "maxPrice",
-                        "in": "path",
-                        "required": true
+                        "in": "path"
                     }
                 ],
                 "responses": {
