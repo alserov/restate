@@ -5,6 +5,8 @@ type Logger interface {
 	Warn(s string, data *Data)
 	Error(s string, data *Data)
 	Debug(s string, data *Data)
+
+	Trace(key string, msg string)
 }
 
 type Data struct {
