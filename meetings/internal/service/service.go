@@ -34,7 +34,7 @@ func (s *service) GetMeetingsByEstateID(ctx context.Context, estateID string) ([
 
 	mtngs, err := s.repo.GetMeetingsByEstateID(ctx, estateID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to cancel meeting: %w", err)
+		return nil, fmt.Errorf("failed to get meeting by estate id: %w", err)
 	}
 
 	return mtngs, nil
@@ -45,7 +45,7 @@ func (s *service) GetMeetingsByPhoneNumber(ctx context.Context, phoneNumber stri
 
 	mtngs, err := s.repo.GetMeetingsByPhoneNumber(ctx, phoneNumber)
 	if err != nil {
-		return nil, fmt.Errorf("failed to cancel meeting: %w", err)
+		return nil, fmt.Errorf("failed to get meeting by phone number: %w", err)
 	}
 
 	return mtngs, nil
@@ -92,7 +92,12 @@ func selectAvailableTStampsForMeeting(tStamps []time.Time) []time.Time {
 	var availableTStamps []time.Time
 
 	// filling timestamps before first
-	t := tStamps[0].Add(-90 * time.Minute)
+	t := time.Now()
+
+	if len(tStamps) > 0 {
+		t = tStamps[0].Add(-90 * time.Minute)
+	}
+
 	for t.Hour() >= models.MinMeetingTimestamp {
 		availableTStamps = append(availableTStamps, t)
 		t = t.Add(-90 * time.Minute)
@@ -109,9 +114,13 @@ func selectAvailableTStampsForMeeting(tStamps []time.Time) []time.Time {
 	}
 
 	// filling timestamps after last (1 month)
-	lastMeetingTStamp := tStamps[len(tStamps)-1]
+	lastMeetingTStamp := time.Now()
+
+	if len(tStamps) > 0 {
+		lastMeetingTStamp = tStamps[len(tStamps)-1]
+	}
 	for i := 0; i < 30; i++ {
-		t := lastMeetingTStamp.Add(90 * time.Minute)
+		t = lastMeetingTStamp.Add(90 * time.Minute)
 
 		if t.Hour() >= models.MaxMeetingTimestamp {
 			now := time.Now()
