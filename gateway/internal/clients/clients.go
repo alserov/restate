@@ -71,7 +71,9 @@ type MeetingsClient interface {
 }
 
 func NewMeetingsClient(cl meetings.MeetingsServiceClient) MeetingsClient {
-	return &meetingsClient{}
+	return &meetingsClient{
+		cl: cl,
+	}
 }
 
 type meetingsClient struct {
@@ -90,12 +92,13 @@ func (m meetingsClient) GetMeetingsByPhoneNumber(ctx context.Context, phone stri
 }
 
 func (m meetingsClient) GetMeetingsByEstateID(ctx context.Context, estateID string) (models.Meetings, error) {
-	//mtngs, err := m.cl.GetMeetingsByEstateID(ctx, m.conv.ToGetMeetingsByEstateIDParameter(phone))
+	//mtngs, err := m.cl.GetMeetingsByEstateID(ctx, m.conv.ToGetMeetingsByEstateIDParameter(estateID))
 	//if err != nil {
 	//	return nil, utils.FromGRPCError(err)
 	//}
 	//
 	//return m.conv.FromMeetings(mtngs), nil
+
 	panic("")
 }
 

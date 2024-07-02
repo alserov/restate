@@ -60,7 +60,7 @@ func (c *controller) SetupRoutes() {
 	estate.GET("/list", c.EstateHandler.GetList)
 	estate.GET("/info/:id", c.EstateHandler.GetInfo)
 
-	meetings.GET("/meetings", c.MeetingsHandler.GetMeetings)
+	meetings.GET("/list", c.MeetingsHandler.GetMeetings)
 	meetings.GET("/available", c.MeetingsHandler.GetAvailableTime)
 
 	// POST
