@@ -133,6 +133,20 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "city",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "city",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
                         "type": "string",
                         "description": "city",
                         "name": "city",

@@ -35,6 +35,8 @@ func NewEstateHandler(cl clients.EstateClient, metr metrics.Metrics, logger log.
 // @Accept       json
 // @Produce      json
 // @Param        country   query      string  false  "country"
+// @Param        limit   query      int  true  "city"
+// @Param        offset   query      int  true  "city"
 // @Param        city   query      string  false  "city"
 // @Param        floor   path      int  false  "floor"
 // @Param        square   path      int  false  "square"
