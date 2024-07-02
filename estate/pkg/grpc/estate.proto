@@ -30,6 +30,8 @@ message GetListParameters {
   string country = 4;
   string city = 5;
   int32 floor = 6;
+  uint32 limit = 7;
+  uint32 offset = 8;
 }
 
 message EstateList {

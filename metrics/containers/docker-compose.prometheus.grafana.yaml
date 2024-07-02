@@ -1,0 +1,22 @@
+version: 0.0.1
+services:
+  prometheus:
+    image: prom/prometheus:v2.40.4
+    ports:
+      - 9090:9090
+    volumes:
+      - prom_data:/var/lib/prom
+
+  grafana:
+    image: grafana/grafana:9.3.0
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=12345
+    volumes:
+      - graf_data:/var/lib/graf
+
+volumes:
+  prom_data:
+  graf_data:

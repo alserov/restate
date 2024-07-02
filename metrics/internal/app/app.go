@@ -2,11 +2,18 @@ package app
 
 import (
 	"context"
+	"github.com/alserov/restate/metrics/internal/async"
 	"github.com/alserov/restate/metrics/internal/config"
 	"github.com/alserov/restate/metrics/internal/log"
 	"github.com/alserov/restate/metrics/internal/workers"
+	"github.com/alserov/restate/metrics/pkg/models"
+	_ "github.com/joho/godotenv/autoload"
 	"os/signal"
 	"syscall"
+)
+
+const (
+	systemWorkers = 5
 )
 
 func MustStart(cfg *config.Config) {
@@ -16,7 +23,12 @@ func MustStart(cfg *config.Config) {
 	defer cancel()
 
 	run(func() {
-		go workers.NewWorker(workers.System).Run(log.WithLogger(ctx, lg))
+		go workers.NewWorker(
+			workers.System,
+			async.NewConsumer(async.Kafka, cfg.Broker.Addr, models.TopicMetrics),
+		).Run(log.WithLogger(ctx, lg), systemWorkers)
+
+		lg.Info("server is running", nil)
 	})
 
 	lg.Info("shutdown server", nil)

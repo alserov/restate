@@ -33,7 +33,7 @@ func FromError(in error) (string, codes.Code) {
 	case Internal:
 		return in.Error(), codes.Internal
 	default:
-		return fmt.Sprintf("unknown status: %v", in), codes.Internal
+		return in.Error(), codes.Internal
 	}
 }
 
