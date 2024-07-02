@@ -77,6 +77,8 @@ func (Converter) ToGetEstateListParameter(in models.GetEstateListParameter) *est
 		Country:  in.Country,
 		City:     in.City,
 		Floor:    in.Floor,
+		Limit:    uint32(in.Limit),
+		Offset:   uint32(in.Offset),
 	}
 }
 
