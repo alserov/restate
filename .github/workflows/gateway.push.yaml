@@ -1,4 +1,4 @@
-name: gateway on push
+name: Gateway on push
 on:
   push:
     branches:
