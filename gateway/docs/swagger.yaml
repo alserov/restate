@@ -123,6 +123,16 @@ paths:
         type: string
       - description: city
         in: query
+        name: limit
+        required: true
+        type: integer
+      - description: city
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - description: city
+        in: query
         name: city
         type: string
       - description: floor
