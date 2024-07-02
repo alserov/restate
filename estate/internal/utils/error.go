@@ -31,9 +31,9 @@ func FromError(in error) (string, codes.Code) {
 	case NotFound:
 		return e.msg, codes.NotFound
 	case Internal:
-		return "internal error", codes.Internal
+		return in.Error(), codes.Internal
 	default:
-		return "internal error", codes.Internal
+		return in.Error(), codes.Internal
 	}
 }
 

@@ -1,4 +1,4 @@
-package wrappers
+package utils
 
 import (
 	"context"
@@ -6,14 +6,15 @@ import (
 	"github.com/google/uuid"
 )
 
-func WithLogger(ctx context.Context, args ...any) context.Context {
-	l, ok := args[0].(log.Logger)
-	if !ok {
-		panic("invalid argument")
-	}
+type Wrapper func(ctx context.Context) context.Context
 
-	ctx = context.WithValue(ctx, ContextLogger, l)
-	return context.WithValue(ctx, ContextLogger, l)
+func WithLogger(l log.Logger) Wrapper {
+	return func(ctx context.Context) context.Context {
+		return context.WithValue(ctx, ContextLogger, l)
+	}
+}
+func WithIdempotencyKey(ctx context.Context) context.Context {
+	return context.WithValue(ctx, ContextIdempotencyKey, uuid.NewString())
 }
 
 func ExtractLogger(ctx context.Context) log.Logger {
@@ -23,10 +24,6 @@ func ExtractLogger(ctx context.Context) log.Logger {
 	}
 
 	return l
-}
-
-func WithIdempotencyKey(ctx context.Context, args ...any) context.Context {
-	return context.WithValue(ctx, ContextIdempotencyKey, uuid.NewString())
 }
 
 func ExtractIdempotencyKey(ctx context.Context) string {

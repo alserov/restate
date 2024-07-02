@@ -2,13 +2,12 @@ package grpc
 
 import (
 	"context"
+	"github.com/alserov/restate/estate/internal/utils"
 	"google.golang.org/grpc"
 )
 
-type Wrapper func(ctx context.Context, args ...any) context.Context
-
 // WithWrappers - middleware for grpc handlers, wraps request context with values
-func WithWrappers(wrs ...Wrapper) grpc.UnaryServerInterceptor {
+func WithWrappers(wrs ...utils.Wrapper) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		for _, wrapper := range wrs {
 			ctx = wrapper(ctx)
