@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"github.com/alserov/restate/gateway/internal/metrics"
 	"github.com/alserov/restate/meetings/internal/log"
 	"github.com/alserov/restate/meetings/internal/metrics"
 	middleware "github.com/alserov/restate/meetings/internal/middleware/grpc"
@@ -39,10 +38,10 @@ type handler struct {
 	metr metrics.Metrics
 }
 
-func (h *handler) GetMeetingsByEstateID(ctx context.Context, parameter *meetings.GetAvailableTimeForMeetingParameter) (*meetings.Meetings, error) {
+func (h *handler) GetMeetingsByEstateID(ctx context.Context, parameter *meetings.GetMeetingsByEstateIDParameter) (*meetings.Meetings, error) {
 	h.logger.Trace(utils.ExtractIdempotencyKey(ctx), "passed GetEstateList server layer")
 
-	mtngs, err := h.srvc.GetMeetingsByEstateID(ctx, parameter.EstateID)
+	mtngs, err := h.srvc.GetMeetingsByEstateID(ctx, parameter.Id)
 	if err != nil {
 		return nil, err
 	}

@@ -12,7 +12,7 @@ service MeetingsService {
   rpc CancelMeeting(CancelMeetingParameter) returns(google.protobuf.Empty);
   rpc GetAvailableTimeForMeeting(GetAvailableTimeForMeetingParameter) returns(AvailableTimeList);
 
-  rpc GetMeetingsByEstateID(GetAvailableTimeForMeetingParameter) returns (Meetings);
+  rpc GetMeetingsByEstateID(GetMeetingsByEstateIDParameter) returns (Meetings);
   rpc GetMeetingsByPhoneNumber(GetMeetingsByPhoneNumberParameter) returns (Meetings);
 }
 
