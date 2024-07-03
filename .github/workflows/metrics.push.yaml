@@ -1,8 +1,8 @@
-name: Gateway on push
+name: Metrics on push
 on:
   push:
     branches:
-      - gateway
+      - metrics
 jobs:
   linter:
     name: Linter
@@ -19,7 +19,7 @@ jobs:
       - name: linter
         uses: golangci/golangci-lint-action@v4
         with:
-          working-directory: gateway
+          working-directory: metrics
 
   tests:
     name: Tests
@@ -35,5 +35,5 @@ jobs:
         uses: actions/checkout@v3
 
       - name: testing
-        working-directory: gateway
+        working-directory: metrics
         run: go test -v ./...
