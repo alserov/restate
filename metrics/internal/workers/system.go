@@ -13,23 +13,36 @@ import (
 
 var _ Worker = &system{}
 
-func NewSystemWorker(consumer async.Consumer) *system {
-	return &system{
-		consumer: consumer,
-	}
-}
-
-var (
-	timePerRequest = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+func NewSystemWorker(consumer async.Consumer, colls *[]prometheus.Collector) *system {
+	timePerRequest := prometheus.NewHistogramVec(prometheus.HistogramOpts{
 		Namespace: "system",
 		Name:      "time_per_request",
 	}, []string{"req_name"})
 
-	requestStatus = prometheus.NewCounterVec(prometheus.CounterOpts{
+	requestStatus := prometheus.NewCounterVec(prometheus.CounterOpts{
 		Namespace: "system",
 		Name:      "request_status",
 	}, []string{"req_name", "status"})
-)
+
+	*colls = append(*colls, requestStatus, timePerRequest)
+
+	return &system{
+		timePerRequest: timePerRequest,
+		requestStatus:  requestStatus,
+		consumer:       consumer,
+	}
+}
+
+type system struct {
+	timePerRequest *prometheus.HistogramVec
+	requestStatus  *prometheus.CounterVec
+
+	consumer async.Consumer
+}
+
+func (s *system) Metrics() []prometheus.Collector {
+	return []prometheus.Collector{s.timePerRequest, s.requestStatus}
+}
 
 type (
 	MetricType uint
@@ -54,10 +67,6 @@ const (
 	RequestStatus
 )
 
-type system struct {
-	consumer async.Consumer
-}
-
 func (s *system) Run(ctx context.Context, workersAmount int) {
 	l := log.FromCtx(ctx)
 
@@ -71,9 +80,29 @@ func (s *system) Run(ctx context.Context, workersAmount int) {
 
 				switch m.Type {
 				case TimePerRequest:
-					timePerRequest.With(prometheus.Labels{"req_name": m.Data["reqName"].(string)}).Observe(m.Data["time"].(float64))
+					reqName, ok := m.Data["reqName"].(string)
+					if !ok {
+						continue
+					}
+
+					dur, ok := m.Data["time"].(int)
+					if !ok {
+						continue
+					}
+
+					s.timePerRequest.With(prometheus.Labels{"req_name": reqName}).Observe(float64(dur))
 				case RequestStatus:
-					requestStatus.With(prometheus.Labels{"req_name": m.Data["reqName"].(string), "status": strconv.Itoa(int(m.Data["status"].(float64)))}).Inc()
+					reqName, ok := m.Data["reqName"].(string)
+					if !ok {
+						continue
+					}
+
+					status, ok := m.Data["status"].(int)
+					if !ok {
+						continue
+					}
+
+					s.requestStatus.With(prometheus.Labels{"req_name": reqName, "status": strconv.Itoa(status)}).Inc()
 				default:
 					l.Error("invalid message type", log.WithData("type", m.Type))
 				}
