@@ -40,10 +40,6 @@ type system struct {
 	consumer async.Consumer
 }
 
-func (s *system) Metrics() []prometheus.Collector {
-	return []prometheus.Collector{s.timePerRequest, s.requestStatus}
-}
-
 type (
 	MetricType uint
 	Message    struct {
