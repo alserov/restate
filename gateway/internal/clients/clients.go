@@ -92,14 +92,12 @@ func (m meetingsClient) GetMeetingsByPhoneNumber(ctx context.Context, phone stri
 }
 
 func (m meetingsClient) GetMeetingsByEstateID(ctx context.Context, estateID string) (models.Meetings, error) {
-	//mtngs, err := m.cl.GetMeetingsByEstateID(ctx, m.conv.ToGetMeetingsByEstateIDParameter(estateID))
-	//if err != nil {
-	//	return nil, utils.FromGRPCError(err)
-	//}
-	//
-	//return m.conv.FromMeetings(mtngs), nil
+	mtngs, err := m.cl.GetMeetingsByEstateID(ctx, m.conv.ToGetMeetingsByEstateIDParameter(estateID))
+	if err != nil {
+		return nil, utils.FromGRPCError(err)
+	}
 
-	panic("")
+	return m.conv.FromMeetings(mtngs), nil
 }
 
 func (m meetingsClient) GetAvailableTime(ctx context.Context, estateID string) ([]time.Time, error) {
