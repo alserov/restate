@@ -49,8 +49,8 @@ func MustLoad() *Config {
 	}
 
 	// Broker
-
 	cfg.Broker.Addr = os.Getenv("BROKER_ADDR")
+	cfg.Broker.Topics.Metrics = os.Getenv("TOPIC_METRICS")
 
 	return &cfg
 }
