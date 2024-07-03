@@ -6,7 +6,6 @@ import (
 	"github.com/alserov/restate/metrics/internal/config"
 	"github.com/alserov/restate/metrics/internal/log"
 	"github.com/alserov/restate/metrics/internal/workers"
-	"github.com/alserov/restate/metrics/pkg/models"
 	_ "github.com/joho/godotenv/autoload"
 	"os/signal"
 	"syscall"
@@ -25,7 +24,7 @@ func MustStart(cfg *config.Config) {
 	run(func() {
 		go workers.NewWorker(
 			workers.System,
-			async.NewConsumer(async.Kafka, cfg.Broker.Addr, models.TopicMetrics),
+			async.NewConsumer(async.Kafka, cfg.Broker.Addr, cfg.Broker.Topics.Metrics),
 		).Run(log.WithLogger(ctx, lg), systemWorkers)
 
 		lg.Info("server is running", nil)

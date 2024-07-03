@@ -4,6 +4,7 @@ package workers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/alserov/restate/metrics/internal/async"
 	"github.com/alserov/restate/metrics/internal/log"
 	"github.com/alserov/restate/metrics/pkg/models"
@@ -58,6 +59,8 @@ func (s *system) Run(ctx context.Context, workersAmount int) {
 				if err := json.Unmarshal(msg, &m); err != nil {
 					l.Error("failed to unmarshal", log.WithData("error", err.Error()))
 				}
+
+				fmt.Println(m)
 
 				switch m.Type {
 				case models.TimePerRequest:
