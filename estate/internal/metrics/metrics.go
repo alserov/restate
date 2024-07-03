@@ -22,6 +22,11 @@ type metrics struct {
 }
 
 type (
+	Message struct {
+		Type uint
+		Data any
+	}
+
 	TimePerRequestData struct {
 		ReqName string        `json:"reqName"`
 		Time    time.Duration `json:"time"`
@@ -33,8 +38,13 @@ type (
 	}
 )
 
+const (
+	timePerRequest = iota
+	requestStatus
+)
+
 func (m *metrics) ObserveRequest(ctx context.Context, status int, dur time.Duration, name string) error {
-	m.Producer.Produce(ctx, TimePerRequestData{ReqName: name, Time: dur})
-	m.Producer.Produce(ctx, RequestStatusData{ReqName: name, Status: status})
+	m.Producer.Produce(ctx, Message{Type: timePerRequest, Data: TimePerRequestData{ReqName: name, Time: dur}})
+	m.Producer.Produce(ctx, Message{Type: requestStatus, Data: RequestStatusData{ReqName: name, Status: status}})
 	return nil
 }
