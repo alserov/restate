@@ -51,9 +51,9 @@ definitions:
     type: object
   models.Meeting:
     properties:
-      estateID:
+      date:
         type: string
-      timestamp:
+      estateID:
         type: string
       visitorPhone:
         type: string
