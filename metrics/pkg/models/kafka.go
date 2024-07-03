@@ -4,7 +4,7 @@ type MetricType uint
 
 type Message struct {
 	Type MetricType
-	Data []byte
+	Data any
 }
 
 const (
