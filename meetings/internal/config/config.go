@@ -51,6 +51,7 @@ func MustLoad() *Config {
 
 	// Broker
 	cfg.Broker.Addr = os.Getenv("KAFKA_ADDR")
+	cfg.Broker.Topics.Metrics = os.Getenv("TOPIC_METRICS")
 
 	return &cfg
 }

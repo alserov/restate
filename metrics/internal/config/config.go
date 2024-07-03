@@ -13,7 +13,10 @@ type Config struct {
 }
 
 type Kafka struct {
-	Addr string
+	Addr   string
+	Topics struct {
+		Metrics string
+	}
 }
 
 func MustLoad() *Config {
@@ -23,6 +26,7 @@ func MustLoad() *Config {
 	cfg.Env = os.Getenv("ENV")
 
 	cfg.Broker.Addr = os.Getenv("KAFKA_ADDR")
+	cfg.Broker.Topics.Metrics = os.Getenv("TOPIC_METRICS")
 
 	return &cfg
 }
