@@ -4,7 +4,6 @@ package workers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/alserov/restate/metrics/internal/async"
 	"github.com/alserov/restate/metrics/internal/log"
 	"github.com/alserov/restate/metrics/pkg/models"
@@ -60,20 +59,20 @@ func (s *system) Run(ctx context.Context, workersAmount int) {
 					l.Error("failed to unmarshal", log.WithData("error", err.Error()))
 				}
 
-				fmt.Println(m)
-
 				switch m.Type {
 				case models.TimePerRequest:
-					var data TimePerRequestData
-					if err := json.Unmarshal(m.Data, &data); err != nil {
-						l.Error("failed to unmarshal", log.WithData("error", err.Error()))
+					data, ok := m.Data.(TimePerRequestData)
+					if !ok {
+						l.Error("invalid message data", nil)
+						continue
 					}
 
 					timePerRequest.With(prometheus.Labels{"req_name": data.ReqName}).Observe(float64(data.Time.Milliseconds()))
 				case models.RequestStatus:
-					var data RequestStatusData
-					if err := json.Unmarshal(m.Data, &data); err != nil {
-						l.Error("failed to unmarshal", log.WithData("error", err.Error()))
+					data, ok := m.Data.(RequestStatusData)
+					if !ok {
+						l.Error("invalid message data", nil)
+						continue
 					}
 
 					requestStatus.With(prometheus.Labels{"req_name": data.ReqName, "status": strconv.Itoa(int(data.Status))}).Inc()
