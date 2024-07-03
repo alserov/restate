@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"github.com/alserov/restate/metrics/internal/async"
 	"github.com/alserov/restate/metrics/internal/log"
-	"github.com/alserov/restate/metrics/pkg/models"
 	"github.com/prometheus/client_golang/prometheus"
 	"strconv"
 	"time"
@@ -33,6 +32,12 @@ var (
 )
 
 type (
+	MetricType uint
+	Message    struct {
+		Type MetricType
+		Data map[string]any
+	}
+
 	TimePerRequestData struct {
 		ReqName string        `json:"reqName"`
 		Time    time.Duration `json:"time"`
@@ -42,6 +47,11 @@ type (
 		ReqName string `json:"reqName"`
 		Status  uint   `json:"status"`
 	}
+)
+
+const (
+	TimePerRequest MetricType = iota
+	RequestStatus
 )
 
 type system struct {
@@ -54,28 +64,16 @@ func (s *system) Run(ctx context.Context, workersAmount int) {
 	for i := 0; i < workersAmount; i++ {
 		go func() {
 			for msg := range s.consumer.Consume(ctx) {
-				var m models.Message
+				var m Message
 				if err := json.Unmarshal(msg, &m); err != nil {
 					l.Error("failed to unmarshal", log.WithData("error", err.Error()))
 				}
 
 				switch m.Type {
-				case models.TimePerRequest:
-					data, ok := m.Data.(TimePerRequestData)
-					if !ok {
-						l.Error("invalid message data", nil)
-						continue
-					}
-
-					timePerRequest.With(prometheus.Labels{"req_name": data.ReqName}).Observe(float64(data.Time.Milliseconds()))
-				case models.RequestStatus:
-					data, ok := m.Data.(RequestStatusData)
-					if !ok {
-						l.Error("invalid message data", nil)
-						continue
-					}
-
-					requestStatus.With(prometheus.Labels{"req_name": data.ReqName, "status": strconv.Itoa(int(data.Status))}).Inc()
+				case TimePerRequest:
+					timePerRequest.With(prometheus.Labels{"req_name": m.Data["reqName"].(string)}).Observe(m.Data["time"].(float64))
+				case RequestStatus:
+					requestStatus.With(prometheus.Labels{"req_name": m.Data["reqName"].(string), "status": strconv.Itoa(int(m.Data["status"].(float64)))}).Inc()
 				default:
 					l.Error("invalid message type", log.WithData("type", m.Type))
 				}
