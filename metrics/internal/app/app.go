@@ -46,6 +46,10 @@ func MustStart(cfg *config.Config) {
 		systemWorker.Run(ctx, systemWorkers)
 
 		lg.Info("server is running", nil)
+
+		if err := http.ListenAndServe(cfg.Addr, m); err != nil {
+			panic("failed to serve: " + err.Error())
+		}
 	})
 
 	lg.Info("shutdown server", nil)

@@ -1,11 +1,12 @@
-version: 0.0.1
+---
+version: "3.9"
 services:
   prometheus:
     image: prom/prometheus:v2.40.4
     ports:
       - 9090:9090
     volumes:
-      - prom_data:/var/lib/prom
+      - ./containers/prometheus.yml:/etc/prometheus/prometheus.yml
 
   grafana:
     image: grafana/grafana:9.3.0
@@ -15,8 +16,8 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=12345
     volumes:
-      - graf_data:/var/lib/graf
+      - ./containers/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+
 
 volumes:
-  prom_data:
-  graf_data:
+  grafana:
