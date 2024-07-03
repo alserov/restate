@@ -48,7 +48,7 @@ info:
   title: Real Estate
   version: "1.0"
 paths:
-  /estate/delete:
+  /estate/delete/{id}:
     delete:
       consumes:
       - application/json
@@ -121,6 +121,16 @@ paths:
         in: query
         name: country
         type: string
+      - description: city
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: city
+        in: query
+        name: offset
+        required: true
+        type: integer
       - description: city
         in: query
         name: city

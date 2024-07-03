@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/estate/delete": {
+        "/estate/delete/{id}": {
             "delete": {
                 "consumes": [
                     "application/json"
@@ -131,6 +131,20 @@ const docTemplate = `{
                         "description": "country",
                         "name": "country",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "city",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "city",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "string",

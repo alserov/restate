@@ -69,7 +69,7 @@ func (c *controller) SetupRoutes() {
 	meetings.POST("/arrange", c.MeetingsHandler.ArrangeMeeting)
 
 	// DELETE
-	estate.DELETE("/delete", c.EstateHandler.DeleteEstate)
+	estate.DELETE("/delete/:id", c.EstateHandler.DeleteEstate)
 
 	// PUT
 
