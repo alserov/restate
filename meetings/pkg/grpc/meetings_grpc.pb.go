@@ -26,7 +26,7 @@ type MeetingsServiceClient interface {
 	ArrangeMeeting(ctx context.Context, in *Meeting, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	CancelMeeting(ctx context.Context, in *CancelMeetingParameter, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetAvailableTimeForMeeting(ctx context.Context, in *GetAvailableTimeForMeetingParameter, opts ...grpc.CallOption) (*AvailableTimeList, error)
-	GetMeetingsByEstateID(ctx context.Context, in *GetAvailableTimeForMeetingParameter, opts ...grpc.CallOption) (*Meetings, error)
+	GetMeetingsByEstateID(ctx context.Context, in *GetMeetingsByEstateIDParameter, opts ...grpc.CallOption) (*Meetings, error)
 	GetMeetingsByPhoneNumber(ctx context.Context, in *GetMeetingsByPhoneNumberParameter, opts ...grpc.CallOption) (*Meetings, error)
 }
 
@@ -65,7 +65,7 @@ func (c *meetingsServiceClient) GetAvailableTimeForMeeting(ctx context.Context, 
 	return out, nil
 }
 
-func (c *meetingsServiceClient) GetMeetingsByEstateID(ctx context.Context, in *GetAvailableTimeForMeetingParameter, opts ...grpc.CallOption) (*Meetings, error) {
+func (c *meetingsServiceClient) GetMeetingsByEstateID(ctx context.Context, in *GetMeetingsByEstateIDParameter, opts ...grpc.CallOption) (*Meetings, error) {
 	out := new(Meetings)
 	err := c.cc.Invoke(ctx, "/meetings.MeetingsService/GetMeetingsByEstateID", in, out, opts...)
 	if err != nil {
@@ -90,7 +90,7 @@ type MeetingsServiceServer interface {
 	ArrangeMeeting(context.Context, *Meeting) (*emptypb.Empty, error)
 	CancelMeeting(context.Context, *CancelMeetingParameter) (*emptypb.Empty, error)
 	GetAvailableTimeForMeeting(context.Context, *GetAvailableTimeForMeetingParameter) (*AvailableTimeList, error)
-	GetMeetingsByEstateID(context.Context, *GetAvailableTimeForMeetingParameter) (*Meetings, error)
+	GetMeetingsByEstateID(context.Context, *GetMeetingsByEstateIDParameter) (*Meetings, error)
 	GetMeetingsByPhoneNumber(context.Context, *GetMeetingsByPhoneNumberParameter) (*Meetings, error)
 	mustEmbedUnimplementedMeetingsServiceServer()
 }
@@ -108,7 +108,7 @@ func (UnimplementedMeetingsServiceServer) CancelMeeting(context.Context, *Cancel
 func (UnimplementedMeetingsServiceServer) GetAvailableTimeForMeeting(context.Context, *GetAvailableTimeForMeetingParameter) (*AvailableTimeList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAvailableTimeForMeeting not implemented")
 }
-func (UnimplementedMeetingsServiceServer) GetMeetingsByEstateID(context.Context, *GetAvailableTimeForMeetingParameter) (*Meetings, error) {
+func (UnimplementedMeetingsServiceServer) GetMeetingsByEstateID(context.Context, *GetMeetingsByEstateIDParameter) (*Meetings, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMeetingsByEstateID not implemented")
 }
 func (UnimplementedMeetingsServiceServer) GetMeetingsByPhoneNumber(context.Context, *GetMeetingsByPhoneNumberParameter) (*Meetings, error) {
@@ -182,7 +182,7 @@ func _MeetingsService_GetAvailableTimeForMeeting_Handler(srv interface{}, ctx co
 }
 
 func _MeetingsService_GetMeetingsByEstateID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAvailableTimeForMeetingParameter)
+	in := new(GetMeetingsByEstateIDParameter)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -194,7 +194,7 @@ func _MeetingsService_GetMeetingsByEstateID_Handler(srv interface{}, ctx context
 		FullMethod: "/meetings.MeetingsService/GetMeetingsByEstateID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MeetingsServiceServer).GetMeetingsByEstateID(ctx, req.(*GetAvailableTimeForMeetingParameter))
+		return srv.(MeetingsServiceServer).GetMeetingsByEstateID(ctx, req.(*GetMeetingsByEstateIDParameter))
 	}
 	return interceptor(ctx, in, info, handler)
 }
