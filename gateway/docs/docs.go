@@ -556,10 +556,10 @@ const docTemplate = `{
         "models.Meeting": {
             "type": "object",
             "properties": {
-                "estateID": {
+                "date": {
                     "type": "string"
                 },
-                "timestamp": {
+                "estateID": {
                     "type": "string"
                 },
                 "visitorPhone": {
