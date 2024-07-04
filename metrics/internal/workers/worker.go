@@ -13,7 +13,7 @@ type Worker interface {
 func NewWorker(t WorkerType, consumer async.Consumer, colls *[]prometheus.Collector) Worker {
 	switch t {
 	case Business:
-		return nil
+		return NewBusinessWorker(consumer, colls)
 	case System:
 		return NewSystemWorker(consumer, colls)
 	default:
