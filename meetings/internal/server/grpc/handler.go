@@ -68,6 +68,8 @@ func (h *handler) ArrangeMeeting(ctx context.Context, meeting *meetings.Meeting)
 		return nil, err
 	}
 
+	_ = h.metr.IncEstateMeeting(ctx, meeting.EstateID)
+
 	return &emptypb.Empty{}, nil
 }
 
