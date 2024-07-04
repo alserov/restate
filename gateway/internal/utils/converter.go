@@ -77,6 +77,8 @@ func (Converter) ToGetEstateListParameter(in models.GetEstateListParameter) *est
 		Country:  in.Country,
 		City:     in.City,
 		Floor:    in.Floor,
+		Limit:    uint32(in.Limit),
+		Offset:   uint32(in.Offset),
 	}
 }
 
@@ -128,8 +130,8 @@ func (Converter) ToCancelMeetingParameter(in models.CancelMeetingParameter) *mee
 func fromMeeting(in *meetings.Meeting) models.Meeting {
 	return models.Meeting{
 		Id:           in.Id,
-		Timestamp:    in.Timestamp.AsTime(),
 		EstateID:     in.EstateID,
 		VisitorPhone: in.VisitorPhone,
+		DateTime:     in.Timestamp.AsTime().String(),
 	}
 }
