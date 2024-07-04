@@ -15,7 +15,8 @@ import (
 )
 
 const (
-	systemWorkers = 5
+	systemWorkersAmount   = 5
+	businessWorkersAmount = 3
 )
 
 func MustStart(cfg *config.Config) {
@@ -27,6 +28,12 @@ func MustStart(cfg *config.Config) {
 
 	systemWorker := workers.NewWorker(
 		workers.System,
+		async.NewConsumer(async.Kafka, cfg.Broker.Addr, cfg.Broker.Topics.Metrics),
+		&collectors,
+	)
+
+	businessWorker := workers.NewWorker(
+		workers.Business,
 		async.NewConsumer(async.Kafka, cfg.Broker.Addr, cfg.Broker.Topics.Metrics),
 		&collectors,
 	)
@@ -43,7 +50,8 @@ func MustStart(cfg *config.Config) {
 	ctx = log.WithLogger(ctx, lg)
 
 	run(func() {
-		systemWorker.Run(ctx, systemWorkers)
+		systemWorker.Run(ctx, systemWorkersAmount)
+		businessWorker.Run(ctx, businessWorkersAmount)
 
 		lg.Info("server is running", nil)
 
