@@ -8,6 +8,7 @@ import (
 
 type Metrics interface {
 	ObserveRequest(ctx context.Context, status int, dur time.Duration, key string) error
+	IncEstateMeeting(ctx context.Context, estateID string) error
 }
 
 func NewMetrics(p async.Producer) *metrics {
@@ -29,6 +30,10 @@ type (
 		Time    time.Duration `json:"time"`
 	}
 
+	EstateMeeting struct {
+		EstateID string `json:"estateID"`
+	}
+
 	RequestStatusData struct {
 		ReqName string `json:"reqName"`
 		Status  uint   `json:"status"`
@@ -40,8 +45,17 @@ const (
 	requestStatus
 )
 
+const (
+	estateMeetingCount = iota
+)
+
 func (m *metrics) ObserveRequest(ctx context.Context, status int, dur time.Duration, key string) error {
 	m.Producer.Produce(ctx, Message{Type: timePerRequest, Data: TimePerRequestData{ReqName: key, Time: dur}})
 	m.Producer.Produce(ctx, Message{Type: requestStatus, Data: RequestStatusData{ReqName: key, Status: uint(status)}})
+	return nil
+}
+
+func (m *metrics) IncEstateMeeting(ctx context.Context, estateID string) error {
+	m.Producer.Produce(ctx, Message{Type: estateMeetingCount, Data: EstateMeeting{EstateID: estateID}})
 	return nil
 }
