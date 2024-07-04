@@ -5,8 +5,11 @@ import (
 	"github.com/alserov/restate/meetings/internal/metrics"
 	"github.com/alserov/restate/meetings/internal/utils"
 	"google.golang.org/grpc"
-	"net/http"
 	"time"
+)
+
+const (
+	serviceName = "meetings"
 )
 
 func WithRequestObserver(metr metrics.Metrics) grpc.UnaryServerInterceptor {
@@ -14,8 +17,9 @@ func WithRequestObserver(metr metrics.Metrics) grpc.UnaryServerInterceptor {
 		start := time.Now()
 
 		res, err := handler(ctx, req)
+		_, st := utils.FromError(err)
 
-		_ = metr.ObserveRequest(ctx, http.StatusOK, time.Since(start), utils.ExtractIdempotencyKey(ctx))
+		_ = metr.ObserveRequest(ctx, int(st), time.Since(start), serviceName)
 
 		return res, err
 	}
