@@ -38,10 +38,10 @@ type handler struct {
 	metr metrics.Metrics
 }
 
-func (h *handler) GetMeetingsByEstateID(ctx context.Context, parameter *meetings.GetAvailableTimeForMeetingParameter) (*meetings.Meetings, error) {
+func (h *handler) GetMeetingsByEstateID(ctx context.Context, parameter *meetings.GetMeetingsByEstateIDParameter) (*meetings.Meetings, error) {
 	h.logger.Trace(utils.ExtractIdempotencyKey(ctx), "passed GetEstateList server layer")
 
-	mtngs, err := h.srvc.GetMeetingsByEstateID(ctx, parameter.EstateID)
+	mtngs, err := h.srvc.GetMeetingsByEstateID(ctx, parameter.Id)
 	if err != nil {
 		return nil, err
 	}

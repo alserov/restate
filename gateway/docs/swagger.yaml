@@ -1,5 +1,12 @@
 basePath: /v1
 definitions:
+  models.CancelMeetingParameter:
+    properties:
+      id:
+        type: string
+      visitorPhone:
+        type: string
+    type: object
   models.Estate:
     properties:
       city:
@@ -40,6 +47,15 @@ definitions:
       price:
         type: number
       title:
+        type: string
+    type: object
+  models.Meeting:
+    properties:
+      date:
+        type: string
+      estateID:
+        type: string
+      visitorPhone:
         type: string
     type: object
 info:
@@ -121,12 +137,12 @@ paths:
         in: query
         name: country
         type: string
-      - description: city
+      - description: limit
         in: query
         name: limit
         required: true
         type: integer
-      - description: city
+      - description: offset
         in: query
         name: offset
         required: true
@@ -208,4 +224,145 @@ paths:
       summary: CreateEstate
       tags:
       - estate
+  /meetings/arrange:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: meeting info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Meeting'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            items:
+              type: integer
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: ArrangeMeeting
+      tags:
+      - meetings
+  /meetings/available:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: estate id
+        in: query
+        name: estateID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: GetAvailableTime
+      tags:
+      - meetings
+  /meetings/cancel:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: meeting info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.CancelMeetingParameter'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            items:
+              type: integer
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: CancelMeeting
+      tags:
+      - meetings
+  /meetings/list:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: estate id
+        in: query
+        name: estateID
+        type: string
+      - description: phone number id
+        in: query
+        name: phoneNumber
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Meeting'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: GetMeetings
+      tags:
+      - meetings
 swagger: "2.0"
