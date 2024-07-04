@@ -40,10 +40,6 @@ type system struct {
 	consumer async.Consumer
 }
 
-func (s *system) Metrics() []prometheus.Collector {
-	return []prometheus.Collector{s.timePerRequest, s.requestStatus}
-}
-
 type (
 	MetricType uint
 	Message    struct {
@@ -85,24 +81,24 @@ func (s *system) Run(ctx context.Context, workersAmount int) {
 						continue
 					}
 
-					dur, ok := m.Data["time"].(int)
+					dur, ok := m.Data["time"].(float64)
 					if !ok {
 						continue
 					}
 
-					s.timePerRequest.With(prometheus.Labels{"req_name": reqName}).Observe(float64(dur))
+					s.timePerRequest.With(prometheus.Labels{"req_name": reqName}).Observe(dur)
 				case RequestStatus:
 					reqName, ok := m.Data["reqName"].(string)
 					if !ok {
 						continue
 					}
 
-					status, ok := m.Data["status"].(int)
+					status, ok := m.Data["status"].(float64)
 					if !ok {
 						continue
 					}
 
-					s.requestStatus.With(prometheus.Labels{"req_name": reqName, "status": strconv.Itoa(status)}).Inc()
+					s.requestStatus.With(prometheus.Labels{"req_name": reqName, "status": strconv.Itoa(int(status))}).Inc()
 				default:
 					l.Error("invalid message type", log.WithData("type", m.Type))
 				}

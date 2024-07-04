@@ -7,7 +7,6 @@ import (
 )
 
 type Worker interface {
-	Metrics() []prometheus.Collector
 	Run(ctx context.Context, workersAmount int)
 }
 
