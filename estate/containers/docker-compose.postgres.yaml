@@ -1,6 +1,7 @@
 version: 0.0.1
+name: postgres_estate
 services:
-  postgres:
+  postgres_estate:
     container_name: db_estate
     image: postgres
     restart: on-failure

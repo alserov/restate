@@ -1,6 +1,7 @@
 version: 0.0.1
+name: app_estate
 services:
-  postgres:
+  app_estate:
     container_name: app_estate
     image: estate_image
     restart: on-failure
@@ -11,7 +12,7 @@ services:
       - DB_PASSWORD=1787
       - DB_NAME=estate
       - DB_PORT=4000
-      - DB_HOST=127.0.0.1
+      - DB_HOST=postgres_estate
       - BROKER_ADDR=localhost:29092
       - TOPIC_METRICS=metrics
     ports:
