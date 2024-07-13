@@ -10,7 +10,12 @@ type Config struct {
 	Addr string
 	DB   Postgres
 
+	Cache  Redis
 	Broker Kafka
+}
+
+type Redis struct {
+	Addr string
 }
 
 type Kafka struct {
@@ -47,6 +52,9 @@ func MustLoad() *Config {
 		Port:     os.Getenv("DB_PORT"),
 		Host:     os.Getenv("DB_HOST"),
 	}
+
+	// Cache
+	cfg.Cache.Addr = os.Getenv("REDIS_ADDR")
 
 	// Broker
 	cfg.Broker.Addr = os.Getenv("BROKER_ADDR")

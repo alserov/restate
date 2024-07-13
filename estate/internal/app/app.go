@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"github.com/alserov/restate/estate/internal/async"
+	"github.com/alserov/restate/estate/internal/cache"
 	"github.com/alserov/restate/estate/internal/config"
 	"github.com/alserov/restate/estate/internal/db/posgtres"
 	"github.com/alserov/restate/estate/internal/log"
@@ -21,10 +22,11 @@ func MustStart(cfg *config.Config) {
 	db, closeConn := posgtres.MustConnect(cfg.DB.Dsn())
 	defer closeConn()
 
+	cch := cache.NewCache(cache.Redis, cfg.Cache.Addr)
 	metr := metrics.NewMetrics(async.NewProducer(async.Kafka, cfg.Broker.Addr, cfg.Broker.Topics.Metrics))
 	repo := posgtres.NewRepository(db)
 	srvc := service.NewService(repo)
-	srvr := grpc.RegisterHandler(srvc, metr, lg)
+	srvr := grpc.RegisterHandler(srvc, cch, metr, lg)
 
 	run(func() {
 		l, err := net.Listen("tcp", cfg.Addr)
