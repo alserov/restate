@@ -2,7 +2,6 @@ package cache
 
 import (
 	"context"
-	"github.com/alserov/restate/estate/internal/cache/redis"
 )
 
 type Cache interface {
@@ -19,7 +18,7 @@ const (
 func NewCache(t Type, addr ...string) Cache {
 	switch t {
 	case Redis:
-		return redis.NewCache(addr[0])
+		return newRedis(addr[0])
 	default:
 		panic("invalid type")
 	}
