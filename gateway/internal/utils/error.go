@@ -36,19 +36,12 @@ func FromError(l log.Logger, in error) (string, int) {
 	case Internal:
 		l.Error(in.Error(), nil)
 		return "internal error", http.StatusInternalServerError
+	case TooManyRequests:
+		return e.msg, http.StatusTooManyRequests
 	default:
 		l.Error(fmt.Sprintf("unknown status: %s", in.Error()), nil)
 		return "internal error", http.StatusInternalServerError
 	}
-}
-
-func ExtractStatus(in error) (ErrorStatus, bool) {
-	var e *err
-	if !errors.As(in, &e) {
-		return 0, false
-	}
-
-	return e.status, true
 }
 
 func FromGRPCError(in error) (error, ErrorStatus) {
@@ -72,4 +65,5 @@ const (
 	Internal ErrorStatus = iota
 	InvalidData
 	NotFound
+	TooManyRequests
 )

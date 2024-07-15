@@ -41,10 +41,6 @@ type controller struct {
 	MeetingsHandler *MeetingsHandler
 }
 
-const (
-	RequestLimitPerMinute = 100
-)
-
 func (c *controller) SetupRoutes() {
 	v1 := c.app.Group("/v1",
 		// wrap request context
@@ -53,7 +49,7 @@ func (c *controller) SetupRoutes() {
 
 		middleware.WithRequestObserver(c.metr),
 		middleware.WithErrorHandler,
-		middleware.WithRateLimiter(RequestLimitPerMinute),
+		middleware.WithRateLimiter(10_000),
 	)
 
 	estate := v1.Group("/estate")
