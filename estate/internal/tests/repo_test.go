@@ -45,7 +45,7 @@ func (p *postgresSuite) SetupTest() {
 	p.db = "postgres"
 
 	// starting container
-	container := p.newPostgresInstance(p.T())
+	container := p.newPostgresInstance()
 	port, err := container.MappedPort(context.Background(), "5432")
 	p.Require().NoError(err)
 
@@ -180,8 +180,8 @@ func (p *postgresSuite) TestGetEstateList() {
 	p.Require().Equal(p.estateModels, estate)
 }
 
-func (p *postgresSuite) newPostgresInstance(t *testing.T) testcontainers.Container {
-	db, err := testcontainers.GenericContainer(context.Background(), testcontainers.GenericContainerRequest{
+func (p *postgresSuite) newPostgresInstance() testcontainers.Container {
+	container, err := testcontainers.GenericContainer(context.Background(), testcontainers.GenericContainerRequest{
 		ContainerRequest: testcontainers.ContainerRequest{
 			Image:        "postgres",
 			ExposedPorts: []string{"5432/tcp"},
@@ -197,7 +197,7 @@ func (p *postgresSuite) newPostgresInstance(t *testing.T) testcontainers.Contain
 		},
 		Started: true,
 	})
-	require.NoError(t, err)
+	require.NoError(p.T(), err)
 
-	return db
+	return container
 }

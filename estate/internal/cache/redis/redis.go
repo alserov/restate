@@ -1,7 +1,8 @@
-package cache
+package redis
 
 import (
 	"context"
+	"github.com/alserov/restate/estate/internal/cache"
 	"github.com/goccy/go-json"
 	"time"
 
@@ -10,11 +11,7 @@ import (
 
 const exp = time.Minute * 15
 
-func newRedis(addr string) *redis {
-	return &redis{mustConnectRedis(addr)}
-}
-
-func mustConnectRedis(addr string) *rd.Client {
+func MustConnect(addr string) *rd.Client {
 	cl := rd.NewClient(&rd.Options{
 		Addr:     addr,
 		Password: "", // no password set
@@ -25,14 +22,21 @@ func mustConnectRedis(addr string) *rd.Client {
 	return cl
 }
 
-var _ Cache = &redis{}
+func NewCache(cl *rd.Client) *redis {
+	return &redis{cl}
+}
+
+var _ cache.Cache = &redis{}
 
 type redis struct {
 	cl *rd.Client
 }
 
 func (r *redis) Set(ctx context.Context, key string, val any) {
-	r.cl.Set(ctx, key, val, exp)
+	b, err := json.Marshal(val)
+	if err == nil {
+		r.cl.Set(ctx, key, b, exp)
+	}
 }
 
 func (r *redis) Get(ctx context.Context, key string, dst any) bool {

@@ -7,7 +7,7 @@ import (
 	"github.com/pressly/goose/v3"
 )
 
-func MustConnect(dsn string) (*sqlx.DB, func()) {
+func MustConnect(dsn string) *sqlx.DB {
 	conn, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
 		panic("failed to connect: " + err.Error())
@@ -19,11 +19,7 @@ func MustConnect(dsn string) (*sqlx.DB, func()) {
 
 	mustMigrate(conn.DB)
 
-	return conn, func() {
-		if err = conn.Close(); err != nil {
-			panic("failed to close connection: " + err.Error())
-		}
-	}
+	return conn
 }
 
 const (
