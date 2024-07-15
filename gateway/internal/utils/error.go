@@ -42,18 +42,27 @@ func FromError(l log.Logger, in error) (string, int) {
 	}
 }
 
-func FromGRPCError(in error) error {
+func ExtractStatus(in error) (ErrorStatus, bool) {
+	var e *err
+	if !errors.As(in, &e) {
+		return 0, false
+	}
+
+	return e.status, true
+}
+
+func FromGRPCError(in error) (error, ErrorStatus) {
 	e, _ := status.FromError(in)
 
 	switch e.Code() {
 	case codes.InvalidArgument:
-		return NewError(e.Message(), InvalidData)
+		return NewError(e.Message(), InvalidData), InvalidData
 	case codes.NotFound:
-		return NewError(e.Message(), NotFound)
+		return NewError(e.Message(), NotFound), NotFound
 	case codes.Internal:
-		return NewError(e.Message(), Internal)
+		return NewError(e.Message(), Internal), Internal
 	default:
-		return NewError(e.Message(), Internal)
+		return NewError(e.Message(), Internal), Internal
 	}
 }
 
