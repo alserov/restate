@@ -138,14 +138,6 @@ func (es *EstateSuite) TestGetInfo() {
 
 	var response models.Estate
 	es.Require().NoError(json.Unmarshal(b, &response))
-	es.Require().Equal(expect.Id, response.Id)
-	es.Require().Equal(expect.Title, response.Title)
-	es.Require().Equal(expect.City, response.City)
-	es.Require().Equal(expect.Country, response.Country)
-	es.Require().Equal(expect.Price, response.Price)
-	es.Require().Equal(expect.MainImage, response.MainImage)
-	es.Require().Equal(expect.Description, response.Description)
-	es.Require().Equal(expect.Street, response.Street)
-	es.Require().Equal(expect.Images, response.Images)
-	es.Require().Equal(expect.Floor, response.Floor)
+	es.Require().Equal(expect, response)
+
 }
