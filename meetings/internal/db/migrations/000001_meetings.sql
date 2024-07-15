@@ -1,3 +1,4 @@
+-- +goose Up
 CREATE TABLE IF NOT EXISTS meetings
 (
     id           text PRIMARY KEY,

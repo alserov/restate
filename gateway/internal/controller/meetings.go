@@ -8,6 +8,7 @@ import (
 	"github.com/alserov/restate/gateway/internal/utils"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"time"
 )
 
 type MeetingsHandler struct {
@@ -92,7 +93,14 @@ func (mh *MeetingsHandler) ArrangeMeeting(c echo.Context) error {
 		return utils.NewError(err.Error(), utils.InvalidData)
 	}
 
-	err := mh.meetingsClient.ArrangeMeeting(wrappers.Ctx(c), mtng)
+	t, err := time.Parse("2006-01-02 15:04", mtng.DateTime)
+	if err != nil {
+		return utils.NewError(err.Error(), utils.InvalidData)
+	}
+
+	mtng.Timestamp = t
+
+	err = mh.meetingsClient.ArrangeMeeting(wrappers.Ctx(c), mtng)
 	if err != nil {
 		return fmt.Errorf("failed to arrange meeting: %w", err)
 	}

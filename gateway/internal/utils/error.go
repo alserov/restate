@@ -36,24 +36,26 @@ func FromError(l log.Logger, in error) (string, int) {
 	case Internal:
 		l.Error(in.Error(), nil)
 		return "internal error", http.StatusInternalServerError
+	case TooManyRequests:
+		return e.msg, http.StatusTooManyRequests
 	default:
 		l.Error(fmt.Sprintf("unknown status: %s", in.Error()), nil)
 		return "internal error", http.StatusInternalServerError
 	}
 }
 
-func FromGRPCError(in error) error {
+func FromGRPCError(in error) (error, ErrorStatus) {
 	e, _ := status.FromError(in)
 
 	switch e.Code() {
 	case codes.InvalidArgument:
-		return NewError(e.Message(), InvalidData)
+		return NewError(e.Message(), InvalidData), InvalidData
 	case codes.NotFound:
-		return NewError(e.Message(), NotFound)
+		return NewError(e.Message(), NotFound), NotFound
 	case codes.Internal:
-		return NewError(e.Message(), Internal)
+		return NewError(e.Message(), Internal), Internal
 	default:
-		return NewError(e.Message(), Internal)
+		return NewError(e.Message(), Internal), Internal
 	}
 }
 
@@ -63,4 +65,5 @@ const (
 	Internal ErrorStatus = iota
 	InvalidData
 	NotFound
+	TooManyRequests
 )

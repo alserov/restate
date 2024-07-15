@@ -49,6 +49,7 @@ func (c *controller) SetupRoutes() {
 
 		middleware.WithRequestObserver(c.metr),
 		middleware.WithErrorHandler,
+		middleware.WithRateLimiter(10_000),
 	)
 
 	estate := v1.Group("/estate")

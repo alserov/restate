@@ -130,8 +130,8 @@ func (Converter) ToCancelMeetingParameter(in models.CancelMeetingParameter) *mee
 func fromMeeting(in *meetings.Meeting) models.Meeting {
 	return models.Meeting{
 		Id:           in.Id,
-		Timestamp:    in.Timestamp.AsTime(),
 		EstateID:     in.EstateID,
 		VisitorPhone: in.VisitorPhone,
+		DateTime:     in.Timestamp.AsTime().String(),
 	}
 }

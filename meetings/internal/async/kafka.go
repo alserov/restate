@@ -16,7 +16,7 @@ func newKafka(addr string, topic string) *kafka {
 	prodCfg.Producer.RequiredAcks = sarama.WaitForAll
 	prodCfg.Producer.Return.Successes = true
 
-	prod, err := sarama.NewAsyncProducer([]string{addr}, prodCfg)
+	prod, err := sarama.NewSyncProducer([]string{addr}, prodCfg)
 	if err != nil {
 		panic("failed to init producer: " + err.Error())
 	}
@@ -25,7 +25,7 @@ func newKafka(addr string, topic string) *kafka {
 }
 
 type kafka struct {
-	sarama.AsyncProducer
+	sarama.SyncProducer
 
 	topic string
 }
@@ -36,5 +36,5 @@ func (k kafka) Produce(ctx context.Context, message any) {
 		utils.ExtractLogger(ctx).Error("failed to unmarshal", log.WithData("error", err.Error()))
 	}
 
-	k.AsyncProducer.Input() <- &sarama.ProducerMessage{Value: sarama.StringEncoder(b), Topic: k.topic}
+	_, _, _ = k.SendMessage(&sarama.ProducerMessage{Value: sarama.StringEncoder(b), Topic: k.topic})
 }

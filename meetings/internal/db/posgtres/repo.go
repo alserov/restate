@@ -24,7 +24,7 @@ type repo struct {
 }
 
 func (r *repo) GetMeetingsByEstateID(ctx context.Context, estateID string) ([]models.Meeting, error) {
-	q := `SELECT * FROM meetings WHERE timestamp < $1 AND estate_id = $2`
+	q := `SELECT * FROM meetings WHERE timestamp >= $1 AND estate_id = $2`
 
 	rows, err := r.Queryx(q, time.Now(), estateID)
 	if err != nil {
@@ -50,7 +50,7 @@ func (r *repo) GetMeetingsByEstateID(ctx context.Context, estateID string) ([]mo
 }
 
 func (r *repo) GetMeetingsByPhoneNumber(ctx context.Context, phoneNumber string) ([]models.Meeting, error) {
-	q := `SELECT * FROM meetings WHERE timestamp < $1 AND visitor_phone = $2`
+	q := `SELECT * FROM meetings WHERE timestamp >= $1 AND visitor_phone = $2`
 
 	rows, err := r.Queryx(q, time.Now(), phoneNumber)
 	if err != nil {
@@ -102,7 +102,7 @@ func (r *repo) CancelMeeting(ctx context.Context, parameter models.CancelMeeting
 }
 
 func (r *repo) GetMeetingTimestamps(ctx context.Context, estateID string) ([]time.Time, error) {
-	q := `SELECT timestamp FROM meetings WHERE timestamp > $1 AND estate_id = $2 ORDER BY timestamp`
+	q := `SELECT timestamp FROM meetings WHERE timestamp >= $1 AND estate_id = $2 ORDER BY timestamp`
 
 	rows, err := r.Queryx(q, time.Now(), estateID)
 	if err != nil {
