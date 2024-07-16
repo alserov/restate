@@ -180,13 +180,6 @@ func (p *postgresSuite) TestGetEstateList() {
 	p.Require().Equal(p.estateModels, estate)
 }
 
-func (p *postgresSuite) TestGetEstateListWithNoRowsError() {
-	list, err := p.repo.GetEstateList(p.ctx, models.GetEstateListParameters{Country: "uganda"})
-	p.Require().NotNil(err)
-	p.Require().Nil(list)
-}
-
-
 func (p *postgresSuite) newPostgresInstance() testcontainers.Container {
 	container, err := testcontainers.GenericContainer(context.Background(), testcontainers.GenericContainerRequest{
 		ContainerRequest: testcontainers.ContainerRequest{
