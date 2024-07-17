@@ -2,6 +2,8 @@ package posgtres
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"github.com/alserov/restate/estate/internal/db"
 	"github.com/alserov/restate/estate/internal/service/models"
 	"github.com/alserov/restate/estate/internal/utils"
@@ -64,6 +66,9 @@ func (r *repo) GetEstateInfo(ctx context.Context, estateID string) (models.Estat
 
 	var estate models.Estate
 	if err := r.QueryRowx(q, estateID).StructScan(&estate); err != nil {
+		if errors.Is(sql.ErrNoRows, err) {
+			return models.Estate{}, utils.NewError("estate not found", utils.NotFound)
+		}
 		return models.Estate{}, utils.NewError(err.Error(), utils.Internal)
 	}
 

@@ -13,3 +13,6 @@ CREATE TABLE IF NOT EXISTS estate
     square      pg_catalog.float8,
     floor       int
 );
+
+CREATE INDEX estate_id_hash_idx ON estate USING hash (id);
+CREATE index estate_price ON estate (price);

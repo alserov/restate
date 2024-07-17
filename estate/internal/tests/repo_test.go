@@ -36,7 +36,7 @@ type postgresSuite struct {
 
 	ctx context.Context
 
-	estateModels []models.EstateMainInfo
+	estateModels []models.Estate
 }
 
 func (p *postgresSuite) SetupTest() {
@@ -64,22 +64,32 @@ func (p *postgresSuite) SetupTest() {
 	p.repo = posgtres.NewRepository(conn)
 
 	// prepare db data
-	p.estateModels = []models.EstateMainInfo{
+	p.estateModels = []models.Estate{
 		{
-			ID:        uuid.NewString(),
-			Title:     "title",
-			Price:     10,
-			Country:   "uk",
-			City:      "london",
-			MainImage: "img",
+			ID:          uuid.NewString(),
+			Title:       "title",
+			Description: "abc",
+			Price:       10,
+			Country:     "uk",
+			City:        "london",
+			Street:      "street",
+			MainImage:   "img",
+			Images:      pq.StringArray{"img1", "img2"},
+			Square:      100,
+			Floor:       5,
 		},
 		{
-			ID:        uuid.NewString(),
-			Title:     "title 1",
-			Price:     10,
-			Country:   "spain",
-			City:      "barcelona",
-			MainImage: "img",
+			ID:          uuid.NewString(),
+			Title:       "title 1",
+			Description: "abc",
+			Price:       10,
+			Country:     "uk",
+			City:        "london",
+			Street:      "street",
+			MainImage:   "img",
+			Images:      pq.StringArray{"img1", "img2"},
+			Square:      100,
+			Floor:       5,
 		},
 	}
 
@@ -91,27 +101,27 @@ func (p *postgresSuite) SetupTest() {
                     ($12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)`,
 		p.estateModels[0].ID,
 		p.estateModels[0].Title,
-		"abc",
+		p.estateModels[0].Description,
 		p.estateModels[0].Price,
 		p.estateModels[0].Country,
 		p.estateModels[0].City,
-		"street",
-		pq.StringArray{"img1", "img2"},
+		p.estateModels[0].Street,
+		p.estateModels[0].Images,
 		p.estateModels[0].MainImage,
-		100,
-		5,
+		p.estateModels[0].Square,
+		p.estateModels[0].Floor,
 
 		p.estateModels[1].ID,
 		p.estateModels[1].Title,
-		"abc",
+		p.estateModels[1].Description,
 		p.estateModels[1].Price,
 		p.estateModels[1].Country,
 		p.estateModels[1].City,
-		"street",
-		pq.StringArray{"img1", "img2"},
+		p.estateModels[1].Street,
+		p.estateModels[1].Images,
 		p.estateModels[1].MainImage,
-		100,
-		5,
+		p.estateModels[1].Square,
+		p.estateModels[1].Floor,
 	)
 
 	// mocks
@@ -134,23 +144,23 @@ func (p *postgresSuite) TestGetEstateList() {
 	estate, err := p.repo.GetEstateList(p.ctx, models.GetEstateListParameters{
 		MinPrice: p.estateModels[0].Price,
 		MaxPrice: p.estateModels[0].Price,
-		Square:   100,
+		Square:   p.estateModels[0].Square,
 		Country:  p.estateModels[0].Country,
 		City:     p.estateModels[0].City,
-		Floor:    5,
+		Floor:    p.estateModels[0].Floor,
 		Limit:    1,
 		Offset:   0,
 	})
 	p.Require().NoError(err)
 	p.Require().Greater(len(estate), 0)
-	p.Require().Equal(p.estateModels[0], estate[0])
+	p.Require().Equal(p.estateModels[0].ID, estate[0].ID)
 
 	// =========================
 
 	estate, err = p.repo.GetEstateList(p.ctx, models.GetEstateListParameters{
 		MinPrice: p.estateModels[1].Price,
 		MaxPrice: p.estateModels[1].Price,
-		Square:   100,
+		Square:   p.estateModels[1].Square,
 		Country:  p.estateModels[1].Country,
 		City:     p.estateModels[1].City,
 		Floor:    5,
@@ -160,7 +170,7 @@ func (p *postgresSuite) TestGetEstateList() {
 
 	p.Require().NoError(err)
 	p.Require().Greater(len(estate), 0)
-	p.Require().Equal(p.estateModels[1], estate[0])
+	p.Require().Equal(p.estateModels[1].ID, estate[0].ID)
 
 	// =======================
 
@@ -177,7 +187,21 @@ func (p *postgresSuite) TestGetEstateList() {
 
 	p.Require().NoError(err)
 	p.Require().Greater(len(estate), 0)
-	p.Require().Equal(p.estateModels, estate)
+	for idx, est := range p.estateModels {
+		p.Require().Equal(est.ID, estate[idx].ID)
+	}
+}
+
+func (p *postgresSuite) TestGetEstateInfo() {
+	info, err := p.repo.GetEstateInfo(p.ctx, p.estateModels[0].ID)
+	p.Require().NoError(err)
+	p.Require().Equal(p.estateModels[0], info)
+
+	// ====================================
+
+	info, err = p.repo.GetEstateInfo(p.ctx, "some random id")
+	p.Require().Error(err)
+	p.Require().Equal(models.Estate{}, info)
 }
 
 func (p *postgresSuite) newPostgresInstance() testcontainers.Container {
