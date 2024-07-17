@@ -43,9 +43,6 @@ func (r *repo) GetEstateList(ctx context.Context, param models.GetEstateListPara
 		param.Limit,
 		param.Offset)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, utils.NewError(err.Error(), utils.NotFound)
-		}
 		return nil, utils.NewError(err.Error(), utils.Internal)
 	}
 
@@ -69,8 +66,8 @@ func (r *repo) GetEstateInfo(ctx context.Context, estateID string) (models.Estat
 
 	var estate models.Estate
 	if err := r.QueryRowx(q, estateID).StructScan(&estate); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return models.Estate{}, utils.NewError(err.Error(), utils.NotFound)
+		if errors.Is(sql.ErrNoRows, err) {
+			return models.Estate{}, utils.NewError("estate not found", utils.NotFound)
 		}
 		return models.Estate{}, utils.NewError(err.Error(), utils.Internal)
 	}

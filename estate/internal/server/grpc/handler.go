@@ -18,6 +18,7 @@ func RegisterHandler(srvc service.Service, cache cache.Cache, metr metrics.Metri
 	srvr := grpc.NewServer(
 		middleware.ChainUnaryServer(
 			middleware.WithWrappers(utils.WithLogger(l), utils.WithIdempotencyKey),
+			middleware.WithRecover(),
 			middleware.WithRequestObserver(metr),
 			middleware.WithErrorHandler(),
 		),
