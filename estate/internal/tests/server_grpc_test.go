@@ -67,7 +67,7 @@ func (s *serverGRPCSuite) SetupTest() {
 	s.Require().NoError(err)
 
 	redisConn := rd.NewClient(&rd.Options{
-		Addr:     "localhost:6379",
+		Addr:     fmt.Sprintf("localhost:%s", port.Port()),
 		Password: "", // no password set
 		DB:       0,
 	})
